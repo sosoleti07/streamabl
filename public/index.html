@@ -441,10 +441,10 @@
       const map = {
         NotAllowedError: 'Brave bloque l’accès ou la permission n’est pas réellement accordée pour ce site. Vérifie les permissions du domaine Render.',
         NotFoundError: 'Aucune caméra ou aucun micro compatible n’a été trouvé.',
-        NotReadableError: 'La caméra ou le micro est déjà utilisé par une autre application ou inaccessible au système.',
+        NotReadableError: 'La caméra ou le micro est déjà utilisé, désactivé au niveau du système, ou inaccessible au pilote.',
         OverconstrainedError: 'Les périphériques disponibles ne correspondent pas aux contraintes demandées.',
         SecurityError: 'L’accès multimédia est bloqué par une règle de sécurité du navigateur.',
-        AbortError: 'Brave ou le système a interrompu l’accès au périphérique.',
+        AbortError: 'Brave ou Windows a interrompu l’accès au périphérique. Une autre application peut utiliser la caméra/micro, ou le pilote peut avoir besoin d’être réinitialisé.',
         InvalidStateError: 'La page n’est pas dans un état actif pour demander la caméra/le micro.',
         TypeError: 'La caméra/le micro ne sont pas disponibles dans ce contexte. Vérifie que tu utilises bien HTTPS.'
       };
@@ -682,12 +682,72 @@
       updateVideoControls();
     }
 
+    function applyLocalStream(stream) {
+      localStream = stream;
+      localVideo.srcObject = stream;
+      localVideo.muted = true;
+      localVideo.playsInline = true;
+      localVideo.autoplay = true;
+      localVideo.play().catch(() => {});
+      localEmpty.style.display = 'none';
+      micBtn.disabled = stream.getAudioTracks().length === 0;
+      camBtn.disabled = stream.getVideoTracks().length === 0;
+      setMediaStatus(cameraStatus, stream.getVideoTracks().length ? 'ok' : 'bad', stream.getVideoTracks().length ? 'Active' : 'Introuvable');
+      setMediaStatus(microphoneStatus, stream.getAudioTracks().length ? 'ok' : 'bad', stream.getAudioTracks().length ? 'Actif' : 'Introuvable');
+      secureContextHint.textContent = 'Caméra et micro prêts.';
+    }
+
+    async function requestMediaRobust() {
+      // Start with the simplest constraints: Brave/Windows is more reliable with these
+      // than with facingMode/ideal-resolution constraints on some webcams.
+      try {
+        return await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      } catch (firstError) {
+        const firstName = firstError?.name || 'UnknownError';
+        console.warn('Combined camera+micro request failed:', firstError);
+
+        // A second attempt separates the devices. This helps when one device is
+        // temporarily unavailable even though the permission itself is granted.
+        let videoStream = null;
+        let audioStream = null;
+        try {
+          videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        } catch (videoError) {
+          console.warn('Video-only request failed:', videoError);
+        }
+        try {
+          audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (audioError) {
+          console.warn('Audio-only request failed:', audioError);
+        }
+
+        if (videoStream || audioStream) {
+          const tracks = [
+            ...(videoStream ? videoStream.getVideoTracks() : []),
+            ...(audioStream ? audioStream.getAudioTracks() : [])
+          ];
+          const merged = new MediaStream(tracks);
+          videoStream?.getTracks().forEach(t => { if (!tracks.includes(t)) t.stop(); });
+          audioStream?.getTracks().forEach(t => { if (!tracks.includes(t)) t.stop(); });
+          if (tracks.length) return merged;
+        }
+
+        // Preserve the original error name so the UI can give the right diagnosis.
+        firstError.__combinedFailure = firstName;
+        throw firstError;
+      }
+    }
+
     async function prepareMedia({ fromTestButton = false } = {}) {
-      if (localStream) {
-        setMediaStatus(cameraStatus, 'ok', 'Active');
-        setMediaStatus(microphoneStatus, 'ok', 'Actif');
+      if (localStream && localStream.getTracks().some(track => track.readyState === 'live')) {
+        applyLocalStream(localStream);
         return true;
       }
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+        localStream = null;
+      }
+
       mediaError.textContent = '';
       if (!window.isSecureContext) {
         mediaError.textContent = 'Cette page n’est pas sécurisée. Ouvre le lien Render en HTTPS, pas en HTTP.';
@@ -698,34 +758,43 @@
       }
       if (!navigator.mediaDevices?.getUserMedia) {
         mediaError.textContent = 'getUserMedia n’est pas disponible dans ce navigateur/contexte.';
+        setMediaStatus(cameraStatus, 'bad', 'Indisponible');
+        setMediaStatus(microphoneStatus, 'bad', 'Indisponible');
         showToast('Caméra/micro indisponibles dans ce contexte.');
         return false;
       }
+
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
-          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-        });
-        localVideo.srcObject = localStream;
-        await localVideo.play().catch(() => {});
-        localEmpty.style.display = 'none';
-        micBtn.disabled = false;
-        camBtn.disabled = false;
-        setMediaStatus(cameraStatus, 'ok', 'Active');
-        setMediaStatus(microphoneStatus, 'ok', 'Actif');
-        secureContextHint.textContent = 'Caméra et micro prêts.';
+        setMediaStatus(cameraStatus, '', 'Ouverture…');
+        setMediaStatus(microphoneStatus, '', 'Ouverture…');
+        secureContextHint.textContent = 'Ouverture de la caméra et du micro…';
+
+        localStream = await requestMediaRobust();
+        applyLocalStream(localStream);
         await readPermissionState();
         if (fromTestButton) showToast('✅ Caméra et micro fonctionnent.');
         return true;
       } catch (error) {
-        console.error('getUserMedia error:', error);
+        console.error('Camera/micro final error:', error);
         localStream?.getTracks().forEach(track => track.stop());
         localStream = null;
         localVideo.srcObject = null;
         localEmpty.style.display = 'grid';
         micBtn.disabled = true;
         camBtn.disabled = true;
-        const details = errorText(error);
+
+        const deviceInfo = await (async () => {
+          try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const cams = devices.filter(d => d.kind === 'videoinput').length;
+            const mics = devices.filter(d => d.kind === 'audioinput').length;
+            return ` Périphériques détectés : ${cams} caméra(s), ${mics} micro(s).`;
+          } catch (_) {
+            return '';
+          }
+        })();
+
+        const details = errorText(error) + deviceInfo;
         mediaError.textContent = details;
         if (error?.name === 'NotFoundError') {
           setMediaStatus(cameraStatus, 'bad', 'Introuvable');
@@ -733,12 +802,21 @@
         } else if (error?.name === 'NotAllowedError' || error?.name === 'SecurityError') {
           setMediaStatus(cameraStatus, 'bad', 'Bloqué');
           setMediaStatus(microphoneStatus, 'bad', 'Bloqué');
+        } else if (error?.name === 'NotReadableError' || error?.name === 'AbortError') {
+          setMediaStatus(cameraStatus, 'bad', 'Périphérique occupé');
+          setMediaStatus(microphoneStatus, 'bad', 'Périphérique occupé');
+          secureContextHint.textContent = 'Ferme les applications qui utilisent la caméra/micro, puis réessaie.';
         } else {
           setMediaStatus(cameraStatus, 'bad', 'Erreur');
           setMediaStatus(microphoneStatus, 'bad', 'Erreur');
         }
         await readPermissionState();
-        showToast(fromTestButton ? details : 'Caméra/micro non disponibles : utilise d’abord « Tester caméra + micro ».');
+
+        if (error?.name === 'AbortError' || error?.name === 'NotReadableError') {
+          showToast('Le périphérique est probablement occupé. Ferme Teams, Zoom, Discord, OBS ou l’application Caméra, puis réessaie.');
+        } else {
+          showToast(fromTestButton ? details : 'Caméra/micro non disponibles : utilise d’abord « Tester caméra + micro ».');
+        }
         return false;
       }
     }
