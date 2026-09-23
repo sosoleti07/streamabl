@@ -105,6 +105,7 @@
 
     .watch-box { padding: 18px; border-bottom: 1px solid var(--line); }
     .watch-layout {
+      isolation: isolate;
       position: relative;
       min-height: min(68vh, 720px);
       aspect-ratio: 16 / 9;
@@ -180,6 +181,48 @@
     }
     .watch-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .watch-controls { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .fullscreen-btn { margin-left: auto; }
+
+    .watch-layout:fullscreen,
+    .watch-layout:-webkit-full-screen {
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+      aspect-ratio: auto;
+      border-radius: 0;
+      border: 0;
+      box-shadow: none;
+      background: #000;
+    }
+    .watch-layout:fullscreen .camera-card,
+    .watch-layout:-webkit-full-screen .camera-card {
+      width: clamp(125px, 15vw, 220px);
+      aspect-ratio: 16 / 10;
+    }
+    .fullscreen-exit {
+      position: absolute; right: 14px; top: 14px; z-index: 10;
+      display: none; height: 40px; padding: 0 13px; border-radius: 12px;
+      background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.15);
+      backdrop-filter: blur(10px);
+    }
+    .watch-layout:fullscreen .fullscreen-exit,
+    .watch-layout:-webkit-full-screen .fullscreen-exit { display: inline-flex; align-items: center; }
+
+    .media-status {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+      margin-top: 12px;
+    }
+    .media-status-item {
+      min-height: 42px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line);
+      background: rgba(255,255,255,.04); color: var(--muted); font-size: 12px;
+    }
+    .media-status-item strong { color: var(--text); font-weight: 600; }
+    .media-status-item.ok strong { color: var(--ok); }
+    .media-status-item.bad strong { color: #ff8b99; }
+    .media-test-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+    .media-error { min-height: 18px; color: #ffb4bf; font-size: 11px; line-height: 1.5; margin-top: 7px; }
+    .fullscreen-hint { margin-top: 8px; color: var(--muted); font-size: 11px; }
     .watch-controls .btn { min-width: 48px; }
     .time-label { min-width: 90px; text-align: center; font-size: 12px; color: var(--muted); }
     #videoProgress { flex: 1 1 220px; accent-color: var(--accent); }
@@ -220,6 +263,8 @@
       .camera-card.local { right: 10px; bottom: 10px; }
       .watch-box { padding: 10px; }
       .room-bar { padding: 12px; }
+      .media-status { grid-template-columns: 1fr; }
+      .fullscreen-btn { margin-left: 0; }
     }
   </style>
 </head>
@@ -247,6 +292,18 @@
         <button id="copyBtn" class="btn secondary" disabled>Copier le lien</button>
       </div>
 
+      <div class="media-check" style="padding: 0 18px 4px;">
+        <div class="media-status">
+          <div id="cameraStatus" class="media-status-item"><span>📹 Caméra</span><strong>À tester</strong></div>
+          <div id="microphoneStatus" class="media-status-item"><span>🎙️ Micro</span><strong>À tester</strong></div>
+        </div>
+        <div class="media-test-row">
+          <button id="testMediaBtn" class="btn secondary">🎥 Tester caméra + micro</button>
+          <span id="secureContextHint" class="subtitle">La vérification se fait directement dans Brave.</span>
+        </div>
+        <div id="mediaError" class="media-error"></div>
+      </div>
+
       <div class="watch-box">
         <div class="watch-toolbar">
           <div class="field">
@@ -258,6 +315,8 @@
         </div>
 
         <div class="watch-layout">
+          <button id="exitFullscreenBtn" class="fullscreen-exit btn secondary" type="button">✕ Quitter le plein écran</button>
+
           <div id="sharedMedia">
             <div id="watchEmpty" class="watch-empty"><div><strong>🎬 Vidéo partagée</strong>Collez un lien puis chargez-le. La lecture sera synchronisée entre vous deux.</div></div>
           </div>
@@ -282,9 +341,11 @@
           <div class="watch-actions">
             <button id="back10Btn" class="btn secondary" disabled>↩ 10s</button>
             <button id="forward10Btn" class="btn secondary" disabled>10s ↪</button>
+            <button id="fullscreenBtn" class="btn secondary fullscreen-btn" type="button">⛶ Plein écran</button>
           </div>
         </div>
         <div class="video-help">Formats pris en charge : liens directs vers MP4/WebM/Ogg et liens YouTube. Les commandes lecture/pause et la position sont synchronisées pour les deux personnes.</div>
+        <div class="fullscreen-hint">Le bouton plein écran agrandit la zone vidéo <strong>sans enlever vos deux petites caméras</strong>.</div>
       </div>
 
       <div class="controls">
@@ -329,6 +390,14 @@
     const timeLabel = document.getElementById('timeLabel');
     const back10Btn = document.getElementById('back10Btn');
     const forward10Btn = document.getElementById('forward10Btn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
+    const watchLayout = document.querySelector('.watch-layout');
+    const testMediaBtn = document.getElementById('testMediaBtn');
+    const cameraStatus = document.getElementById('cameraStatus');
+    const microphoneStatus = document.getElementById('microphoneStatus');
+    const secureContextHint = document.getElementById('secureContextHint');
+    const mediaError = document.getElementById('mediaError');
 
     let roomId = '';
     let localStream = null;
@@ -357,6 +426,48 @@
         username: window.__RTC_CONFIG__.turnUsername || undefined,
         credential: window.__RTC_CONFIG__.turnCredential || undefined
       });
+    }
+
+
+    function setMediaStatus(element, state, text) {
+      element.classList.remove('ok', 'bad');
+      if (state === 'ok') element.classList.add('ok');
+      if (state === 'bad') element.classList.add('bad');
+      element.querySelector('strong').textContent = text;
+    }
+
+    function errorText(error) {
+      const name = error?.name || 'UnknownError';
+      const map = {
+        NotAllowedError: 'Brave bloque l’accès ou la permission n’est pas réellement accordée pour ce site. Vérifie les permissions du domaine Render.',
+        NotFoundError: 'Aucune caméra ou aucun micro compatible n’a été trouvé.',
+        NotReadableError: 'La caméra ou le micro est déjà utilisé par une autre application ou inaccessible au système.',
+        OverconstrainedError: 'Les périphériques disponibles ne correspondent pas aux contraintes demandées.',
+        SecurityError: 'L’accès multimédia est bloqué par une règle de sécurité du navigateur.',
+        AbortError: 'Brave ou le système a interrompu l’accès au périphérique.',
+        InvalidStateError: 'La page n’est pas dans un état actif pour demander la caméra/le micro.',
+        TypeError: 'La caméra/le micro ne sont pas disponibles dans ce contexte. Vérifie que tu utilises bien HTTPS.'
+      };
+      return `${name}: ${map[name] || 'Erreur inconnue lors de l’accès à la caméra ou au micro.'}`;
+    }
+
+    async function readPermissionState() {
+      if (!navigator.permissions?.query) return;
+      for (const item of [
+        ['camera', cameraStatus],
+        ['microphone', microphoneStatus]
+      ]) {
+        try {
+          const permission = await navigator.permissions.query({ name: item[0] });
+          const value = permission.state;
+          if (value === 'granted') setMediaStatus(item[1], 'ok', 'Autorisé');
+          else if (value === 'denied') setMediaStatus(item[1], 'bad', 'Bloqué');
+          else setMediaStatus(item[1], '', 'À autoriser');
+          permission.onchange = () => readPermissionState();
+        } catch (_) {
+          // Some browsers do not expose camera/microphone permission state.
+        }
+      }
     }
 
     function showToast(message) {
@@ -488,7 +599,7 @@
           width: '100%',
           height: '100%',
           videoId,
-          playerVars: { autoplay: shouldPlay ? 1 : 0, controls: 1, rel: 0, playsinline: 1, start: Math.floor(startAt) },
+          playerVars: { autoplay: shouldPlay ? 1 : 0, controls: 1, fs: 0, rel: 0, playsinline: 1, start: Math.floor(startAt) },
           events: {
             onReady: () => {
               youtubeReady = true;
@@ -538,7 +649,7 @@
       }
 
       const video = document.createElement('video');
-      video.controls = true;
+      video.controls = false;
       video.playsInline = true;
       video.preload = 'metadata';
       video.src = cleanUrl;
@@ -571,18 +682,63 @@
       updateVideoControls();
     }
 
-    async function prepareMedia() {
-      if (localStream) return true;
+    async function prepareMedia({ fromTestButton = false } = {}) {
+      if (localStream) {
+        setMediaStatus(cameraStatus, 'ok', 'Active');
+        setMediaStatus(microphoneStatus, 'ok', 'Actif');
+        return true;
+      }
+      mediaError.textContent = '';
+      if (!window.isSecureContext) {
+        mediaError.textContent = 'Cette page n’est pas sécurisée. Ouvre le lien Render en HTTPS, pas en HTTP.';
+        setMediaStatus(cameraStatus, 'bad', 'HTTPS requis');
+        setMediaStatus(microphoneStatus, 'bad', 'HTTPS requis');
+        showToast('La caméra et le micro nécessitent HTTPS.');
+        return false;
+      }
+      if (!navigator.mediaDevices?.getUserMedia) {
+        mediaError.textContent = 'getUserMedia n’est pas disponible dans ce navigateur/contexte.';
+        showToast('Caméra/micro indisponibles dans ce contexte.');
+        return false;
+      }
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        });
         localVideo.srcObject = localStream;
+        await localVideo.play().catch(() => {});
         localEmpty.style.display = 'none';
         micBtn.disabled = false;
         camBtn.disabled = false;
+        setMediaStatus(cameraStatus, 'ok', 'Active');
+        setMediaStatus(microphoneStatus, 'ok', 'Actif');
+        secureContextHint.textContent = 'Caméra et micro prêts.';
+        await readPermissionState();
+        if (fromTestButton) showToast('✅ Caméra et micro fonctionnent.');
         return true;
       } catch (error) {
-        console.error(error);
-        showToast('Autorisation caméra/micro refusée ou indisponible.');
+        console.error('getUserMedia error:', error);
+        localStream?.getTracks().forEach(track => track.stop());
+        localStream = null;
+        localVideo.srcObject = null;
+        localEmpty.style.display = 'grid';
+        micBtn.disabled = true;
+        camBtn.disabled = true;
+        const details = errorText(error);
+        mediaError.textContent = details;
+        if (error?.name === 'NotFoundError') {
+          setMediaStatus(cameraStatus, 'bad', 'Introuvable');
+          setMediaStatus(microphoneStatus, 'bad', 'Introuvable');
+        } else if (error?.name === 'NotAllowedError' || error?.name === 'SecurityError') {
+          setMediaStatus(cameraStatus, 'bad', 'Bloqué');
+          setMediaStatus(microphoneStatus, 'bad', 'Bloqué');
+        } else {
+          setMediaStatus(cameraStatus, 'bad', 'Erreur');
+          setMediaStatus(microphoneStatus, 'bad', 'Erreur');
+        }
+        await readPermissionState();
+        showToast(fromTestButton ? details : 'Caméra/micro non disponibles : utilise d’abord « Tester caméra + micro ».');
         return false;
       }
     }
@@ -708,6 +864,38 @@
       clearVideoBtn.disabled = true;
       setStatus('Hors appel');
     }
+
+    testMediaBtn.addEventListener('click', () => prepareMedia({ fromTestButton: true }));
+
+    fullscreenBtn.addEventListener('click', async () => {
+      try {
+        if (!document.fullscreenElement && watchLayout.requestFullscreen) {
+          await watchLayout.requestFullscreen();
+        } else if (document.webkitFullscreenElement && watchLayout.webkitExitFullscreen) {
+          await watchLayout.webkitExitFullscreen();
+        } else if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        }
+      } catch (error) {
+        console.error('fullscreen error:', error);
+        showToast('Impossible d’ouvrir le plein écran dans ce navigateur.');
+      }
+    });
+
+    exitFullscreenBtn.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitFullscreenElement && document.webkitExitFullscreen) await document.webkitExitFullscreen();
+      } catch (_) {}
+    });
+
+    function updateFullscreenButton() {
+      const active = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+      fullscreenBtn.textContent = active ? '⤢ Quitter' : '⛶ Plein écran';
+    }
+
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
 
     createBtn.addEventListener('click', () => {
       if (joined) return;
@@ -878,6 +1066,9 @@
     } else {
       roomInput.value = makeRoomCode();
     }
+
+    secureContextHint.textContent = window.isSecureContext ? 'HTTPS détecté. Clique sur « Tester caméra + micro ».' : '⚠️ HTTPS nécessaire pour la caméra et le micro.';
+    readPermissionState();
 
     const youtubeApi = document.createElement('script');
     youtubeApi.src = 'https://www.youtube.com/iframe_api';
