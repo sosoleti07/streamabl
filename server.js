@@ -27,11 +27,14 @@ app.get('/health', (_req, res) => {
 });
 
 app.get('/rtc-config.js', (_req, res) => {
-  const turnUrl = process.env.TURN_URL || '';
+  const turnUrls = String(process.env.TURN_URLS || process.env.TURN_URL || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
   const turnUsername = process.env.TURN_USERNAME || '';
   const turnCredential = process.env.TURN_CREDENTIAL || '';
   res.type('application/javascript').send(
-    `window.__RTC_CONFIG__ = ${JSON.stringify({ turnUrl, turnUsername, turnCredential })};`
+    `window.__RTC_CONFIG__ = ${JSON.stringify({ turnUrls, turnUsername, turnCredential })};`
   );
 });
 
@@ -58,15 +61,20 @@ io.on('connection', (socket) => {
 
     const memberIds = [...members.users];
     const initiator = memberIds.length === 1;
-    ack?.({ ok: true, room, initiator });
+    ack?.({ ok: true, room, initiator, count: memberIds.length });
 
-    if (members.media && memberIds.length === 2) {
-      socket.emit('shared-video-state', members.media);
+    // Always tell everyone the current number of participants. This makes it
+    // obvious whether both phones are really in the same server-side room.
+    io.to(room).emit('room-count', { count: memberIds.length });
+
+    // Send the current shared-video state to the joining client when available.
+    if (members.media) {
+      socket.emit('shared-video-state', { ...members.media, serverSentAt: Date.now() });
     }
 
     if (members.users.size === 2) {
       for (const memberId of members.users) {
-        io.to(memberId).emit('room-ready', { initiator: memberId === memberIds[0] });
+        io.to(memberId).emit('room-ready', { initiator: memberId === memberIds[0], count: 2 });
       }
     }
   });
@@ -75,6 +83,13 @@ io.on('connection', (socket) => {
     const currentRoom = socket.data.room;
     if (!currentRoom || currentRoom !== room || !data) return;
     socket.to(currentRoom).emit('signal', data);
+  });
+
+  socket.on('request-video-state', () => {
+    const currentRoom = socket.data.room;
+    if (!currentRoom) return;
+    const members = rooms.get(currentRoom);
+    if (members?.media) socket.emit('shared-video-state', { ...members.media, serverSentAt: Date.now() });
   });
 
   socket.on('video-command', ({ room, action, url, mediaType, currentTime, playing }) => {
@@ -131,7 +146,11 @@ function leaveCurrentRoom(socket) {
   if (members) {
     members.users.delete(socket.id);
     socket.to(room).emit('peer-left');
-    if (members.users.size === 0) rooms.delete(room);
+    if (members.users.size === 0) {
+      rooms.delete(room);
+    } else {
+      io.to(room).emit('room-count', { count: members.users.size });
+    }
   }
 
   socket.leave(room);

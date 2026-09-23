@@ -61,3 +61,7 @@ Le projet accepte des identifiants TURN via les variables d'environnement :
 - `TURN_CREDENTIAL`
 
 Ne mets jamais les vrais identifiants TURN dans GitHub.
+
+
+### Brave : AbortError
+Si le site affiche `AbortError`, la permission peut déjà être accordée mais Windows/Brave n'arrive pas à garder le périphérique ouvert. Ferme les applications qui utilisent la caméra ou le micro (Teams, Zoom, Discord, OBS, application Caméra), puis clique à nouveau sur « Tester caméra + micro ». Le site tente désormais une seconde méthode en ouvrant caméra et micro séparément.
