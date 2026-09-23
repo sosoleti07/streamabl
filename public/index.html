@@ -175,6 +175,9 @@
       background: #090b16;
     }
 
+    .remote-audio-btn { position: absolute; right: 8px; bottom: 8px; z-index: 4; border: 0; border-radius: 999px; padding: 8px 10px; background: rgba(0,0,0,.72); color: #fff; cursor: pointer; font-size: 11px; display: none; }
+    .remote-audio-btn.show { display: inline-flex; }
+
     .watch-toolbar {
       display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px;
       align-items: end; margin-bottom: 12px;
@@ -278,7 +281,7 @@
           <p class="subtitle">Un salon vidéo privé pour vous deux</p>
         </div>
       </div>
-      <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Hors appel</span></div>
+      <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Hors appel</span><span id="roomCount" style="margin-left:8px;color:#d9dbea">• 0/2</span></div>
     </header>
 
     <section class="card">
@@ -325,6 +328,7 @@
             <video id="remoteVideo" autoplay playsinline></video>
             <div class="video-label">Ta copine</div>
             <div id="remoteEmpty" class="camera-empty">En attente de sa caméra…</div>
+            <button id="enableRemoteAudioBtn" class="remote-audio-btn" type="button">🔊 Activer le son</button>
           </div>
 
           <div class="camera-card local">
@@ -377,8 +381,10 @@
     const remoteVideo = document.getElementById('remoteVideo');
     const localEmpty = document.getElementById('localEmpty');
     const remoteEmpty = document.getElementById('remoteEmpty');
+    const enableRemoteAudioBtn = document.getElementById('enableRemoteAudioBtn');
     const statusText = document.getElementById('statusText');
     const statusDot = document.getElementById('statusDot');
+    const roomCount = document.getElementById('roomCount');
     const toast = document.getElementById('toast');
     const videoUrlInput = document.getElementById('videoUrlInput');
     const loadVideoBtn = document.getElementById('loadVideoBtn');
@@ -402,6 +408,7 @@
     let roomId = '';
     let localStream = null;
     let peerConnection = null;
+    let pendingIceCandidates = [];
     let isInitiator = false;
     let joined = false;
     let toastTimer = null;
@@ -411,19 +418,27 @@
     let youtubeReady = false;
     let hlsInstance = null;
     let applyingRemoteCommand = false;
+    let suppressVideoBroadcastUntil = 0;
     let progressTimer = null;
     let lastSyncSent = 0;
+    let remoteStream = null;
+    let renegotiationTimer = null;
 
     const rtcConfig = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' }
-      ]
+      ],
+      bundlePolicy: 'max-bundle',
+      rtcpMuxPolicy: 'require'
     };
 
-    if (window.__RTC_CONFIG__?.turnUrl) {
+    const turnUrls = Array.isArray(window.__RTC_CONFIG__?.turnUrls)
+      ? window.__RTC_CONFIG__.turnUrls
+      : (window.__RTC_CONFIG__?.turnUrl ? [window.__RTC_CONFIG__.turnUrl] : []);
+    if (turnUrls.length) {
       rtcConfig.iceServers.push({
-        urls: window.__RTC_CONFIG__.turnUrl,
+        urls: turnUrls,
         username: window.__RTC_CONFIG__.turnUsername || undefined,
         credential: window.__RTC_CONFIG__.turnCredential || undefined
       });
@@ -481,6 +496,13 @@
     function setStatus(text, online = false) {
       statusText.textContent = text;
       statusDot.classList.toggle('online', online);
+    }
+
+    function setRoomCount(count) {
+      const safe = Math.max(0, Math.min(2, Number(count) || 0));
+      roomCount.textContent = `• ${safe}/2`;
+      if (safe === 2) roomCount.style.color = 'var(--ok)';
+      else roomCount.style.color = '#d9dbea';
     }
 
     function setRoomInUrl(room) {
@@ -618,6 +640,8 @@
               startProgressTimer();
               if (startAt > 0) youtubePlayer.seekTo(startAt, true);
               if (shouldPlay) youtubePlayer.playVideo();
+              // Confirm the player exists before remote commands are applied.
+              socket.emit('request-video-state');
             },
             onStateChange: (event) => {
               if (applyingRemoteCommand) return;
@@ -687,18 +711,18 @@
       video.addEventListener('durationchange', updateVideoControls);
       video.addEventListener('timeupdate', updateVideoControls);
       video.addEventListener('play', () => {
-        if (!applyingRemoteCommand) sendVideoCommand('play', { currentTime: video.currentTime, playing: true });
+        if (!applyingRemoteCommand && Date.now() > suppressVideoBroadcastUntil) sendVideoCommand('play', { currentTime: video.currentTime, playing: true });
         updateVideoControls();
       });
       video.addEventListener('pause', () => {
-        if (!applyingRemoteCommand) sendVideoCommand('pause', { currentTime: video.currentTime, playing: false });
+        if (!applyingRemoteCommand && Date.now() > suppressVideoBroadcastUntil) sendVideoCommand('pause', { currentTime: video.currentTime, playing: false });
         updateVideoControls();
       });
       video.addEventListener('seeking', () => {
-        if (!applyingRemoteCommand) sendVideoCommand('seek', { currentTime: video.currentTime });
+        if (!applyingRemoteCommand && Date.now() > suppressVideoBroadcastUntil) sendVideoCommand('seek', { currentTime: video.currentTime });
       });
       video.addEventListener('seeked', () => {
-        if (!applyingRemoteCommand) sendVideoCommand('seek', { currentTime: video.currentTime });
+        if (!applyingRemoteCommand && Date.now() > suppressVideoBroadcastUntil) sendVideoCommand('seek', { currentTime: video.currentTime });
         updateVideoControls();
       });
       video.addEventListener('error', () => {
@@ -888,10 +912,25 @@
 
       localStream?.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
-      peerConnection.ontrack = (event) => {
-        const [stream] = event.streams;
-        remoteVideo.srcObject = stream;
+      peerConnection.ontrack = async (event) => {
+        if (event.streams && event.streams[0]) {
+          remoteStream = event.streams[0];
+        } else {
+          remoteStream = remoteStream || new MediaStream();
+          if (!remoteStream.getTracks().includes(event.track)) remoteStream.addTrack(event.track);
+        }
+        remoteVideo.srcObject = remoteStream;
+        remoteVideo.muted = false;
+        remoteVideo.volume = 1;
         remoteEmpty.style.display = 'none';
+        enableRemoteAudioBtn.classList.add('show');
+        try {
+          await remoteVideo.play();
+          enableRemoteAudioBtn.classList.remove('show');
+        } catch (error) {
+          console.warn('Remote media autoplay blocked:', error);
+          showToast('La caméra est connectée. Appuie sur 🔊 Activer le son pour démarrer l’audio.');
+        }
       };
 
       peerConnection.onicecandidate = (event) => {
@@ -900,18 +939,50 @@
 
       peerConnection.onconnectionstatechange = () => {
         const state = peerConnection.connectionState;
-        if (state === 'connected') setStatus('Vous regardez ensemble ❤️', true);
-        if (state === 'failed') showToast('La connexion vidéo a échoué. Réessaie.');
+        console.log('WebRTC connectionState:', state);
+        if (state === 'connected') {
+          setStatus('Vous êtes connectés ❤️', true);
+          showToast('Caméra et micro de ta copine connectés ❤️');
+        }
+        if (state === 'connecting') setStatus('Connexion vidéo…');
+        if (state === 'disconnected') setStatus('Connexion vidéo interrompue…');
+        if (state === 'failed') {
+          setStatus('Connexion WebRTC échouée');
+          showToast('WebRTC n’arrive pas à relier les deux téléphones. Un serveur TURN est probablement nécessaire sur ce réseau.');
+          try { peerConnection.restartIce(); } catch (_) {}
+          clearTimeout(renegotiationTimer);
+          if (isInitiator) renegotiationTimer = setTimeout(() => startOffer(true).catch(console.error), 1000);
+        }
+      };
+
+      peerConnection.oniceconnectionstatechange = () => {
+        const state = peerConnection.iceConnectionState;
+        console.log('ICE state:', state);
+        if (state === 'checking') setStatus('Recherche de connexion entre les téléphones…');
+        if (state === 'connected' || state === 'completed') setStatus('Vous êtes connectés ❤️', true);
+        if (state === 'failed') showToast('ICE a échoué. Sans TURN, certains réseaux mobiles/routeurs peuvent bloquer la connexion.');
       };
 
       return peerConnection;
     }
 
-    async function startOffer() {
+    async function startOffer(iceRestart = false) {
       const pc = createPeerConnection();
-      const offer = await pc.createOffer();
+      const offer = await pc.createOffer(iceRestart ? { iceRestart: true } : undefined);
       await pc.setLocalDescription(offer);
       socket.emit('signal', { room: roomId, data: { type: 'offer', sdp: pc.localDescription } });
+    }
+
+    async function flushPendingIceCandidates(pc) {
+      if (!pc.remoteDescription) return;
+      const queue = pendingIceCandidates.splice(0);
+      for (const candidate of queue) {
+        try {
+          await pc.addIceCandidate(candidate);
+        } catch (error) {
+          console.warn('ICE candidate ignoré:', error);
+        }
+      }
     }
 
     async function handleSignal(data) {
@@ -919,21 +990,29 @@
       try {
         if (data.type === 'offer') {
           await pc.setRemoteDescription(data.sdp);
+          await flushPendingIceCandidates(pc);
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
           socket.emit('signal', { room: roomId, data: { type: 'answer', sdp: pc.localDescription } });
         } else if (data.type === 'answer') {
           await pc.setRemoteDescription(data.sdp);
+          await flushPendingIceCandidates(pc);
         } else if (data.type === 'candidate' && data.candidate) {
-          await pc.addIceCandidate(data.candidate);
+          if (pc.remoteDescription) {
+            await pc.addIceCandidate(data.candidate);
+          } else {
+            // Mobile browsers can deliver ICE before the offer/answer arrives.
+            pendingIceCandidates.push(data.candidate);
+          }
         }
       } catch (error) {
-        console.error(error);
-        showToast('Impossible d’établir la connexion vidéo.');
+        console.error('WebRTC signaling error:', error);
+        showToast('Erreur de connexion vidéo. Réessaie de rejoindre le salon.');
       }
     }
 
     function resetPeer() {
+      pendingIceCandidates = [];
       if (peerConnection) {
         peerConnection.ontrack = null;
         peerConnection.onicecandidate = null;
@@ -941,6 +1020,9 @@
         peerConnection = null;
       }
       remoteVideo.srcObject = null;
+      remoteStream = null;
+      remoteVideo.muted = false;
+      enableRemoteAudioBtn.classList.remove('show');
       remoteEmpty.style.display = 'grid';
     }
 
@@ -972,6 +1054,7 @@
 
         roomId = response.room;
         isInitiator = response.initiator;
+        setRoomCount(response.count || 1);
         joined = true;
         roomInput.value = roomId;
         setRoomInUrl(roomId);
@@ -980,7 +1063,9 @@
         joinBtn.disabled = true;
         createBtn.disabled = true;
         hangupBtn.disabled = false;
-        setStatus('En attente de ta copine…');
+        setStatus(response.count === 2 ? '2/2 — Connexion vidéo…' : 'En attente de ta copine…');
+        socket.emit('request-video-state');
+        setTimeout(() => { if (joined) socket.emit('request-video-state'); }, 1200);
         showToast('Salon prêt. Partage le lien avec elle ❤️');
       });
     }
@@ -1001,8 +1086,22 @@
       loadVideoBtn.disabled = true;
       cleanupSharedVideo();
       clearVideoBtn.disabled = true;
+      setRoomCount(0);
       setStatus('Hors appel');
     }
+
+    enableRemoteAudioBtn.addEventListener('click', async () => {
+      try {
+        remoteVideo.muted = false;
+        remoteVideo.volume = 1;
+        await remoteVideo.play();
+        enableRemoteAudioBtn.classList.remove('show');
+        showToast('🔊 Son activé.');
+      } catch (error) {
+        console.error('Remote audio activation failed:', error);
+        showToast('Impossible d’activer le son. Vérifie le volume et le mode silencieux du téléphone.');
+      }
+    });
 
     testMediaBtn.addEventListener('click', () => prepareMedia({ fromTestButton: true }));
 
@@ -1092,13 +1191,19 @@
     });
 
     playPauseBtn.addEventListener('click', () => {
+      const nextPlaying = !isSharedPlaying();
+      const t = getSharedTime();
+      suppressVideoBroadcastUntil = Date.now() + 1200;
       if (sharedVideoType === 'direct' && sharedVideo) {
-        if (sharedVideo.paused) sharedVideo.play().catch(() => showToast('Impossible de démarrer cette vidéo.'));
+        try { sharedVideo.currentTime = t; } catch (_) {}
+        if (nextPlaying) sharedVideo.play().catch(() => showToast('Impossible de démarrer cette vidéo.'));
         else sharedVideo.pause();
       } else if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) {
-        if (youtubePlayer.getPlayerState() === 1) youtubePlayer.pauseVideo();
-        else youtubePlayer.playVideo();
+        youtubePlayer.seekTo(t, true);
+        if (nextPlaying) youtubePlayer.playVideo();
+        else youtubePlayer.pauseVideo();
       }
+      sendVideoCommand(nextPlaying ? 'play' : 'pause', { currentTime: t, playing: nextPlaying });
     });
 
     videoProgress.addEventListener('input', () => {
@@ -1132,11 +1237,26 @@
       if (!joined) setStatus('Prêt à appeler');
     });
 
+    socket.on('room-count', ({ count }) => {
+      setRoomCount(count);
+      if (joined) {
+        if (count === 2) {
+          setStatus('2/2 — Connexion vidéo…');
+        } else if (count === 1) {
+          setStatus('En attente de ta copine…');
+        }
+      }
+    });
+
     socket.on('room-ready', async ({ initiator }) => {
       if (!joined) return;
       isInitiator = initiator;
+      setRoomCount(2);
       setStatus('Connexion vidéo…');
       createPeerConnection();
+      // Ask the server again for the latest shared-video state. This covers
+      // cases where the second phone joined while the first was loading media.
+      socket.emit('request-video-state');
       if (isInitiator) await startOffer();
     });
 
@@ -1156,6 +1276,7 @@
       }
 
       applyingRemoteCommand = true;
+      suppressVideoBroadcastUntil = Date.now() + 1500;
       try {
         const t = Number(command.currentTime || 0);
         if (command.action === 'play') {
@@ -1207,6 +1328,7 @@
     }
 
     secureContextHint.textContent = window.isSecureContext ? 'HTTPS détecté. Clique sur « Tester caméra + micro ».' : '⚠️ HTTPS nécessaire pour la caméra et le micro.';
+    setRoomCount(0);
     readPermissionState();
 
     const youtubeApi = document.createElement('script');
