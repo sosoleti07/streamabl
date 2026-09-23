@@ -423,6 +423,7 @@
     let lastSyncSent = 0;
     let remoteStream = null;
     let renegotiationTimer = null;
+    let lastAppliedVideoKey = '';
 
     const rtcConfig = {
       iceServers: [
@@ -611,6 +612,7 @@
       youtubePlayer = null;
       youtubeReady = false;
       sharedVideoType = null;
+      lastAppliedVideoKey = '';
       sharedMedia.innerHTML = '';
       sharedMedia.appendChild(watchEmpty);
       watchEmpty.style.display = 'grid';
@@ -639,9 +641,12 @@
               updateVideoControls();
               startProgressTimer();
               if (startAt > 0) youtubePlayer.seekTo(startAt, true);
-              if (shouldPlay) youtubePlayer.playVideo();
-              // Confirm the player exists before remote commands are applied.
-              socket.emit('request-video-state');
+              if (shouldPlay) {
+                youtubePlayer.playVideo();
+              }
+              // Do not request the state again here. A previous version did so,
+              // which caused a load -> state -> load loop and could destabilize
+              // the WebRTC connection when a video was started.
             },
             onStateChange: (event) => {
               if (applyingRemoteCommand) return;
@@ -663,14 +668,35 @@
     }
 
     function loadSharedVideo(url, type, startAt = 0, shouldPlay = false) {
-      cleanupSharedVideo();
       const cleanUrl = String(url || '').trim();
       if (!cleanUrl) return;
 
+      const detectedType = detectVideoType(cleanUrl);
+      const nextType = detectedType || type || 'direct';
+      const videoKey = `${nextType}|${cleanUrl}`;
+
+      // Ignore an identical state replay unless it is a meaningful seek/play update.
+      // This prevents the two clients from repeatedly rebuilding the same player.
+      if (videoKey === lastAppliedVideoKey && sharedVideoType === nextType) {
+        if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) {
+          const current = youtubePlayer.getCurrentTime() || 0;
+          if (Math.abs(current - Number(startAt || 0)) > 1.5) youtubePlayer.seekTo(Number(startAt || 0), true);
+          if (shouldPlay && youtubePlayer.getPlayerState() !== YT.PlayerState.PLAYING) youtubePlayer.playVideo();
+          if (!shouldPlay && youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING) youtubePlayer.pauseVideo();
+        } else if (sharedVideoType === 'direct' && sharedVideo) {
+          if (Math.abs((sharedVideo.currentTime || 0) - Number(startAt || 0)) > 1.5) sharedVideo.currentTime = Number(startAt || 0);
+          if (shouldPlay && sharedVideo.paused) sharedVideo.play().catch(() => {});
+          if (!shouldPlay && !sharedVideo.paused) sharedVideo.pause();
+        }
+        return;
+      }
+
+      lastAppliedVideoKey = videoKey;
+      cleanupSharedVideo();
+
       // Always inspect the URL too. The server may store HLS as "direct", but
       // .m3u8 must still be initialized through hls.js on browsers that need it.
-      const detectedType = detectVideoType(cleanUrl);
-      sharedVideoType = detectedType || type || 'direct';
+      sharedVideoType = nextType;
       videoUrlInput.value = cleanUrl;
       watchEmpty.style.display = 'none';
 
@@ -1265,7 +1291,6 @@
     socket.on('shared-video-state', (state) => {
       if (!joined || !state?.url) return;
       loadSharedVideo(state.url, state.mediaType, state.currentTime || 0, Boolean(state.playing));
-      showToast('La vidéo en cours a été synchronisée 🎬');
     });
 
     socket.on('video-command', (command) => {
