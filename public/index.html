@@ -308,7 +308,7 @@
         <div class="watch-toolbar">
           <div class="field">
             <label for="videoUrlInput">Lien de la vidéo à regarder ensemble</label>
-            <input id="videoUrlInput" style="text-transform:none" placeholder="https://.../video.mp4 ou lien YouTube" autocomplete="off" />
+            <input id="videoUrlInput" style="text-transform:none" placeholder="https://.../video.mp4, .m3u8 ou lien YouTube" autocomplete="off" />
           </div>
           <button id="loadVideoBtn" class="btn primary" disabled>▶ Charger</button>
           <button id="clearVideoBtn" class="btn secondary" disabled>✕ Effacer</button>
@@ -344,7 +344,7 @@
             <button id="fullscreenBtn" class="btn secondary fullscreen-btn" type="button">⛶ Plein écran</button>
           </div>
         </div>
-        <div class="video-help">Formats pris en charge : liens directs vers MP4/WebM/Ogg et liens YouTube. Les commandes lecture/pause et la position sont synchronisées pour les deux personnes.</div>
+        <div class="video-help">Formats pris en charge : MP4/WebM/Ogg, flux HLS (.m3u8) et liens YouTube. Les commandes lecture/pause et la position sont synchronisées pour les deux personnes.</div>
         <div class="fullscreen-hint">Le bouton plein écran agrandit la zone vidéo <strong>sans enlever vos deux petites caméras</strong>.</div>
       </div>
 
@@ -409,6 +409,7 @@
     let sharedVideoType = null;
     let youtubePlayer = null;
     let youtubeReady = false;
+    let hlsInstance = null;
     let applyingRemoteCommand = false;
     let progressTimer = null;
     let lastSyncSent = 0;
@@ -509,7 +510,13 @@
     }
 
     function detectVideoType(url) {
-      return extractYouTubeId(url) ? 'youtube' : 'direct';
+      const value = String(url || '').trim();
+      if (extractYouTubeId(value)) return 'youtube';
+      try {
+        const pathname = new URL(value, window.location.href).pathname.toLowerCase();
+        if (pathname.endsWith('.m3u8') || /\.m3u8(?:$|[?#])/i.test(value)) return 'hls';
+      } catch (_) {}
+      return 'direct';
     }
 
     function formatTime(seconds) {
@@ -574,6 +581,10 @@
         sharedVideo.removeAttribute('src');
         sharedVideo.load();
       }
+      if (hlsInstance) {
+        try { hlsInstance.destroy(); } catch (_) {}
+        hlsInstance = null;
+      }
       sharedVideo = null;
       youtubePlayer = null;
       youtubeReady = false;
@@ -632,7 +643,10 @@
       const cleanUrl = String(url || '').trim();
       if (!cleanUrl) return;
 
-      sharedVideoType = type || detectVideoType(cleanUrl);
+      // Always inspect the URL too. The server may store HLS as "direct", but
+      // .m3u8 must still be initialized through hls.js on browsers that need it.
+      const detectedType = detectVideoType(cleanUrl);
+      sharedVideoType = detectedType || type || 'direct';
       videoUrlInput.value = cleanUrl;
       watchEmpty.style.display = 'none';
 
@@ -652,16 +666,26 @@
       video.controls = false;
       video.playsInline = true;
       video.preload = 'metadata';
-      video.src = cleanUrl;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.crossOrigin = 'anonymous';
       sharedMedia.innerHTML = '';
       sharedMedia.appendChild(video);
       sharedVideo = video;
 
-      video.addEventListener('loadedmetadata', () => {
-        if (startAt > 0 && Number.isFinite(video.duration)) video.currentTime = Math.min(startAt, video.duration);
+      const finishInitialSeek = () => {
+        if (startAt > 0 && Number.isFinite(video.duration) && video.duration > 0) {
+          try { video.currentTime = Math.min(startAt, video.duration); } catch (_) {}
+        }
         updateVideoControls();
-        if (shouldPlay) video.play().catch(() => showToast('Clique sur Lecture pour démarrer la vidéo.'));
-      });
+        if (shouldPlay) {
+          video.play().catch(() => showToast('La vidéo est chargée. Clique sur ▶ Lecture si Brave bloque la lecture automatique.'));
+        }
+      };
+
+      video.addEventListener('loadedmetadata', finishInitialSeek, { once: true });
+      video.addEventListener('durationchange', updateVideoControls);
+      video.addEventListener('timeupdate', updateVideoControls);
       video.addEventListener('play', () => {
         if (!applyingRemoteCommand) sendVideoCommand('play', { currentTime: video.currentTime, playing: true });
         updateVideoControls();
@@ -671,13 +695,50 @@
         updateVideoControls();
       });
       video.addEventListener('seeking', () => {
-        if (!applyingRemoteCommand && !video.seeking) sendVideoCommand('seek', { currentTime: video.currentTime });
+        if (!applyingRemoteCommand) sendVideoCommand('seek', { currentTime: video.currentTime });
       });
       video.addEventListener('seeked', () => {
         if (!applyingRemoteCommand) sendVideoCommand('seek', { currentTime: video.currentTime });
         updateVideoControls();
       });
-      video.addEventListener('error', () => showToast('Impossible de lire ce lien. Essaie un MP4/WebM direct ou YouTube.'));
+      video.addEventListener('error', () => {
+        const code = video.error?.code;
+        const details = code ? ` (code ${code})` : '';
+        showToast(`Impossible de lire la vidéo${details}. Vérifie que le serveur autorise CORS et que le lien n'est pas expiré.`);
+      });
+
+      if (sharedVideoType === 'hls') {
+        if (window.Hls && Hls.isSupported()) {
+          hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: false });
+          hlsInstance.on(Hls.Events.MEDIA_ATTACHED, () => {
+            hlsInstance.loadSource(cleanUrl);
+          });
+          hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+            finishInitialSeek();
+          });
+          hlsInstance.on(Hls.Events.ERROR, (_event, data) => {
+            console.warn('HLS error:', data);
+            if (data?.fatal) {
+              let message = 'Erreur HLS.';
+              if (data.type === Hls.ErrorTypes.NETWORK_ERROR) message = 'Le flux HLS ne répond pas ou son lien a expiré.';
+              else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) message = 'Le navigateur n’arrive pas à décoder ce flux HLS.';
+              else if (data.details === 'manifestLoadError') message = 'Impossible de charger le fichier .m3u8. Le serveur peut bloquer CORS.';
+              showToast(message);
+            }
+          });
+          hlsInstance.attachMedia(video);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+          // Native HLS support (Safari and some mobile browsers).
+          video.src = cleanUrl;
+        } else {
+          showToast('Ce navigateur ne prend pas en charge HLS (.m3u8).');
+          cleanupSharedVideo();
+          return;
+        }
+      } else {
+        video.src = cleanUrl;
+      }
+
       startProgressTimer();
       updateVideoControls();
     }
@@ -1100,7 +1161,7 @@
         if (command.action === 'play') {
           if (sharedVideoType === 'direct' && sharedVideo) {
             sharedVideo.currentTime = t;
-            sharedVideo.play().catch(() => showToast('Clique sur Lecture pour autoriser la lecture automatique.'));
+            sharedVideo.play().catch(() => showToast('Clique sur ▶ Lecture pour autoriser la lecture de la vidéo.'));
           } else if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) {
             youtubePlayer.seekTo(t, true);
             youtubePlayer.playVideo();
@@ -1152,5 +1213,6 @@
     youtubeApi.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(youtubeApi);
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </body>
 </html>
