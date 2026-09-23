@@ -10,7 +10,17 @@ const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 const rooms = new Map();
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+  // Permissions Policy keeps camera/microphone available to this first-party page.
+  res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+  next();
+});
+
+app.use(express.static(path.join(__dirname, 'public'), { index: 'index.html', maxAge: 0 }));
+
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true });
