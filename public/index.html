@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0d1021" />
   <title>Our Little Video Call ❤️</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg: #090b16;
@@ -50,25 +52,57 @@
       margin-bottom: 22px;
     }
 
-    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
     .heart {
-      width: 48px; height: 48px; display: grid; place-items: center;
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
       border-radius: 16px;
       background: linear-gradient(135deg, var(--accent), #b84dff);
       box-shadow: 0 12px 35px rgba(255, 92, 138, .24);
       font-size: 24px;
     }
-    h1 { margin: 0; font-size: 22px; }
-    .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .subtitle {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
 
     .status {
-      display: inline-flex; align-items: center; gap: 8px;
-      color: var(--muted); font-size: 13px;
-      border: 1px solid var(--line); background: rgba(255,255,255,.04);
-      padding: 9px 12px; border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      padding: 9px 12px;
+      border-radius: 999px;
     }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #ffc857; }
-    .dot.online { background: var(--ok); box-shadow: 0 0 12px rgba(85,217,145,.55); }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ffc857;
+    }
+
+    .dot.online {
+      background: var(--ok);
+      box-shadow: 0 0 12px rgba(85,217,145,.55);
+    }
 
     .card {
       border: 1px solid var(--line);
@@ -80,30 +114,86 @@
     }
 
     .room-bar {
-      display: flex; flex-wrap: wrap; align-items: end; gap: 12px;
-      padding: 18px; border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 12px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
     }
-    .field { flex: 1 1 250px; }
-    label { display:block; color: var(--muted); font-size: 12px; margin: 0 0 7px; }
+
+    .field {
+      flex: 1 1 250px;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 0 0 7px;
+    }
+
     input {
-      width: 100%; height: 45px; border-radius: 13px; border: 1px solid var(--line);
-      outline: none; background: rgba(0,0,0,.18); color: var(--text); padding: 0 14px;
-      font: inherit; text-transform: uppercase;
+      width: 100%;
+      height: 45px;
+      border-radius: 13px;
+      border: 1px solid var(--line);
+      outline: none;
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 0 14px;
+      font: inherit;
+      text-transform: uppercase;
     }
-    input:focus { border-color: rgba(255,92,138,.75); box-shadow: 0 0 0 3px rgba(255,92,138,.10); }
+
+    input:focus {
+      border-color: rgba(255,92,138,.75);
+      box-shadow: 0 0 0 3px rgba(255,92,138,.10);
+    }
 
     button {
-      border: 0; cursor: pointer; color: var(--text); font: inherit; font-weight: 600;
+      border: 0;
+      cursor: pointer;
+      color: var(--text);
+      font: inherit;
+      font-weight: 600;
       transition: transform .16s ease, opacity .16s ease, background .16s ease;
     }
-    button:hover { transform: translateY(-1px); }
-    button:disabled { opacity: .45; cursor: not-allowed; transform:none; }
-    .btn { height: 45px; padding: 0 16px; border-radius: 13px; }
-    .primary { background: linear-gradient(135deg, var(--accent), #c552ff); }
-    .secondary { background: rgba(255,255,255,.08); border: 1px solid var(--line); }
-    .danger { background: var(--danger); }
 
-    .watch-box { padding: 18px; border-bottom: 1px solid var(--line); }
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn {
+      height: 45px;
+      padding: 0 16px;
+      border-radius: 13px;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent), #c552ff);
+    }
+
+    .secondary {
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--line);
+    }
+
+    .danger {
+      background: var(--danger);
+    }
+
+    .watch-box {
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
     .watch-layout {
       isolation: isolate;
       position: relative;
@@ -115,6 +205,7 @@
       border: 1px solid var(--line);
       box-shadow: 0 24px 70px rgba(0,0,0,.28);
     }
+
     #sharedMedia {
       position: absolute;
       inset: 0;
@@ -124,6 +215,7 @@
       display: grid;
       place-items: center;
     }
+
     #sharedMedia video,
     #sharedMedia iframe {
       width: 100%;
@@ -133,6 +225,7 @@
       background: #000;
       object-fit: contain;
     }
+
     .watch-empty {
       position: absolute;
       inset: 0;
@@ -144,7 +237,13 @@
       background: radial-gradient(circle, rgba(255,92,138,.08), transparent 55%);
       pointer-events: none;
     }
-    .watch-empty strong { display:block; color: var(--text); margin-bottom: 6px; font-size: 16px; }
+
+    .watch-empty strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
 
     .camera-card {
       position: absolute;
@@ -157,34 +256,98 @@
       border: 2px solid rgba(255,255,255,.24);
       box-shadow: 0 15px 35px rgba(0,0,0,.45);
     }
-    .camera-card.local { right: 16px; bottom: 16px; }
-    .camera-card.remote { left: 16px; bottom: 16px; }
+
+    .camera-card.local {
+      right: 16px;
+      bottom: 16px;
+    }
+
+    .camera-card.remote {
+      left: 16px;
+      bottom: 16px;
+    }
+
     .camera-card video {
-      width: 100%; height: 100%; object-fit: cover; display: block; background: #05060b;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #05060b;
     }
-    #localVideo { transform: scaleX(-1); }
+
+    #localVideo {
+      transform: scaleX(-1);
+    }
+
     .video-label {
-      position: absolute; left: 8px; top: 8px;
-      padding: 5px 8px; border-radius: 999px;
-      background: rgba(0,0,0,.55); backdrop-filter: blur(10px);
-      font-size: 11px; border: 1px solid rgba(255,255,255,.10);
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      font-size: 11px;
+      border: 1px solid rgba(255,255,255,.10);
     }
+
     .camera-empty {
-      position: absolute; inset: 0; display: grid; place-items: center; padding: 10px;
-      text-align: center; color: var(--muted); font-size: 11px;
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
       background: #090b16;
     }
 
-    .remote-audio-btn { position: absolute; right: 8px; bottom: 8px; z-index: 4; border: 0; border-radius: 999px; padding: 8px 10px; background: rgba(0,0,0,.72); color: #fff; cursor: pointer; font-size: 11px; display: none; }
-    .remote-audio-btn.show { display: inline-flex; }
+    .remote-audio-btn {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      z-index: 4;
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 10px;
+      background: rgba(0,0,0,.72);
+      color: #fff;
+      cursor: pointer;
+      font-size: 11px;
+      display: none;
+    }
+
+    .remote-audio-btn.show {
+      display: inline-flex;
+    }
 
     .watch-toolbar {
-      display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px;
-      align-items: end; margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
     }
-    .watch-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .watch-controls { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-    .fullscreen-btn { margin-left: auto; }
+
+    .watch-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .watch-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .fullscreen-btn {
+      margin-left: auto;
+    }
 
     .watch-layout:fullscreen,
     .watch-layout:-webkit-full-screen {
@@ -197,176 +360,515 @@
       box-shadow: none;
       background: #000;
     }
+
     .watch-layout:fullscreen .camera-card,
     .watch-layout:-webkit-full-screen .camera-card {
       width: clamp(125px, 15vw, 220px);
       aspect-ratio: 16 / 10;
     }
+
     .fullscreen-exit {
-      position: absolute; right: 14px; top: 14px; z-index: 10;
-      display: none; height: 40px; padding: 0 13px; border-radius: 12px;
-      background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.15);
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      z-index: 10;
+      display: none;
+      height: 40px;
+      padding: 0 13px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.15);
       backdrop-filter: blur(10px);
     }
+
     .watch-layout:fullscreen .fullscreen-exit,
-    .watch-layout:-webkit-full-screen .fullscreen-exit { display: inline-flex; align-items: center; }
+    .watch-layout:-webkit-full-screen .fullscreen-exit {
+      display: inline-flex;
+      align-items: center;
+    }
 
     .media-status {
-      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
       margin-top: 12px;
     }
-    .media-status-item {
-      min-height: 42px; display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding: 9px 12px; border-radius: 12px; border: 1px solid var(--line);
-      background: rgba(255,255,255,.04); color: var(--muted); font-size: 12px;
-    }
-    .media-status-item strong { color: var(--text); font-weight: 600; }
-    .media-status-item.ok strong { color: var(--ok); }
-    .media-status-item.bad strong { color: #ff8b99; }
-    .media-test-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px; }
-    .media-error { min-height: 18px; color: #ffb4bf; font-size: 11px; line-height: 1.5; margin-top: 7px; }
-    .fullscreen-hint { margin-top: 8px; color: var(--muted); font-size: 11px; }
-    .watch-controls .btn { min-width: 48px; }
-    .time-label { min-width: 90px; text-align: center; font-size: 12px; color: var(--muted); }
-    #videoProgress { flex: 1 1 220px; accent-color: var(--accent); }
-    .video-help { margin-top: 10px; font-size: 11px; color: var(--muted); line-height: 1.5; }
 
-    .videos { padding: 0; display: none; }
+    .media-status-item {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .media-status-item strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .media-status-item.ok strong {
+      color: var(--ok);
+    }
+
+    .media-status-item.bad strong {
+      color: #ff8b99;
+    }
+
+    .media-test-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .media-error {
+      min-height: 18px;
+      color: #ffb4bf;
+      font-size: 11px;
+      line-height: 1.5;
+      margin-top: 7px;
+    }
+
+    .fullscreen-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .watch-controls .btn {
+      min-width: 48px;
+    }
+
+    .time-label {
+      min-width: 90px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    #videoProgress {
+      flex: 1 1 220px;
+      accent-color: var(--accent);
+    }
+
+    .video-help {
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .videos {
+      padding: 0;
+      display: none;
+    }
 
     .controls {
-      display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
       padding: 4px 18px 18px;
     }
+
     .control {
-      width: 48px; height: 48px; border-radius: 15px; background: rgba(255,255,255,.07);
-      border: 1px solid var(--line); font-size: 18px;
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--line);
+      font-size: 18px;
     }
-    .control.active-off { background: rgba(255,77,101,.15); border-color: rgba(255,77,101,.38); }
-    .hangup { width: auto; padding: 0 20px; }
+
+    .control.active-off {
+      background: rgba(255,77,101,.15);
+      border-color: rgba(255,77,101,.38);
+    }
+
+    .hangup {
+      width: auto;
+      padding: 0 20px;
+    }
 
     .hint {
-      padding: 0 18px 20px; color: var(--muted); text-align: center; font-size: 12px; line-height: 1.6;
+      padding: 0 18px 20px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.6;
     }
 
     .toast {
-      position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px);
-      opacity: 0; pointer-events: none; transition: .25s ease;
-      max-width: min(90vw, 520px); padding: 12px 15px; border-radius: 13px;
-      background: #171b2e; border: 1px solid var(--line); box-shadow: 0 20px 50px rgba(0,0,0,.35);
-      font-size: 13px; z-index: 20;
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+      max-width: min(90vw, 520px);
+      padding: 12px 15px;
+      border-radius: 13px;
+      background: #171b2e;
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+      font-size: 13px;
+      z-index: 20;
     }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
 
     @media (max-width: 800px) {
-      header { align-items: flex-start; flex-direction: column; }
-      .watch-layout { min-height: 52vh; }
-      .watch-toolbar { grid-template-columns: 1fr; }
-      .camera-card { width: 125px; }
-      .camera-card.remote { left: 10px; bottom: 10px; }
-      .camera-card.local { right: 10px; bottom: 10px; }
-      .watch-box { padding: 10px; }
-      .room-bar { padding: 12px; }
-      .media-status { grid-template-columns: 1fr; }
-      .fullscreen-btn { margin-left: 0; }
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .watch-layout {
+        min-height: 52vh;
+      }
+
+      .watch-toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .camera-card {
+        width: 125px;
+      }
+
+      .camera-card.remote {
+        left: 10px;
+        bottom: 10px;
+      }
+
+      .camera-card.local {
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .watch-box {
+        padding: 10px;
+      }
+
+      .room-bar {
+        padding: 12px;
+      }
+
+      .media-status {
+        grid-template-columns: 1fr;
+      }
+
+      .fullscreen-btn {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
+
 <body>
   <main class="shell">
+
     <header>
       <div class="brand">
         <div class="heart">❤️</div>
+
         <div>
           <h1>Our Little Video Call</h1>
           <p class="subtitle">Un salon vidéo privé pour vous deux</p>
         </div>
       </div>
-      <div class="status"><span id="statusDot" class="dot"></span><span id="statusText">Hors appel</span><span id="roomCount" style="margin-left:8px;color:#d9dbea">• 0/2</span></div>
+
+      <div class="status">
+        <span id="statusDot" class="dot"></span>
+        <span id="statusText">Hors appel</span>
+        <span id="roomCount" style="margin-left:8px;color:#d9dbea">• 0/2</span>
+      </div>
     </header>
 
     <section class="card">
+
       <div class="room-bar">
+
         <div class="field">
           <label for="roomInput">Code du salon</label>
-          <input id="roomInput" maxlength="32" placeholder="Ex. SOFIANE-MON-SOLEIL" autocomplete="off" />
+          <input
+            id="roomInput"
+            maxlength="32"
+            placeholder="Ex. SOFIANE-MON-SOLEIL"
+            autocomplete="off"
+          />
         </div>
-        <button id="createBtn" class="btn secondary">Créer un salon</button>
-        <button id="joinBtn" class="btn primary">Rejoindre</button>
-        <button id="copyBtn" class="btn secondary" disabled>Copier le lien</button>
+
+        <button id="createBtn" class="btn secondary">
+          Créer un salon
+        </button>
+
+        <button id="joinBtn" class="btn primary">
+          Rejoindre
+        </button>
+
+        <button id="copyBtn" class="btn secondary" disabled>
+          Copier le lien
+        </button>
+
       </div>
 
       <div class="media-check" style="padding: 0 18px 4px;">
+
         <div class="media-status">
-          <div id="cameraStatus" class="media-status-item"><span>📹 Caméra</span><strong>À tester</strong></div>
-          <div id="microphoneStatus" class="media-status-item"><span>🎙️ Micro</span><strong>À tester</strong></div>
+
+          <div id="cameraStatus" class="media-status-item">
+            <span>📹 Caméra</span>
+            <strong>À tester</strong>
+          </div>
+
+          <div id="microphoneStatus" class="media-status-item">
+            <span>🎙️ Micro</span>
+            <strong>À tester</strong>
+          </div>
+
         </div>
+
         <div class="media-test-row">
-          <button id="testMediaBtn" class="btn secondary">🎥 Tester caméra + micro</button>
-          <span id="secureContextHint" class="subtitle">La vérification se fait directement dans Brave.</span>
+
+          <button id="testMediaBtn" class="btn secondary">
+            🎥 Tester caméra + micro
+          </button>
+
+          <span id="secureContextHint" class="subtitle">
+            La vérification se fait directement dans Brave.
+          </span>
+
         </div>
+
         <div id="mediaError" class="media-error"></div>
+
       </div>
 
       <div class="watch-box">
+
         <div class="watch-toolbar">
+
           <div class="field">
-            <label for="videoUrlInput">Lien de la vidéo à regarder ensemble</label>
-            <input id="videoUrlInput" style="text-transform:none" placeholder="https://.../video.mp4, .m3u8 ou lien YouTube" autocomplete="off" />
+
+            <label for="videoUrlInput">
+              Lien de la vidéo à regarder ensemble
+            </label>
+
+            <input
+              id="videoUrlInput"
+              style="text-transform:none"
+              placeholder="https://.../video.mp4, .m3u8 ou lien YouTube"
+              autocomplete="off"
+            />
+
           </div>
-          <button id="loadVideoBtn" class="btn primary" disabled>▶ Charger</button>
-          <button id="clearVideoBtn" class="btn secondary" disabled>✕ Effacer</button>
+
+          <button id="loadVideoBtn" class="btn primary" disabled>
+            ▶ Charger
+          </button>
+
+          <button id="clearVideoBtn" class="btn secondary" disabled>
+            ✕ Effacer
+          </button>
+
         </div>
 
         <div class="watch-layout">
-          <button id="exitFullscreenBtn" class="fullscreen-exit btn secondary" type="button">✕ Quitter le plein écran</button>
+
+          <button
+            id="exitFullscreenBtn"
+            class="fullscreen-exit btn secondary"
+            type="button"
+          >
+            ✕ Quitter le plein écran
+          </button>
 
           <div id="sharedMedia">
-            <div id="watchEmpty" class="watch-empty"><div><strong>🎬 Vidéo partagée</strong>Collez un lien puis chargez-le. La lecture sera synchronisée entre vous deux.</div></div>
+
+            <div id="watchEmpty" class="watch-empty">
+
+              <div>
+                <strong>🎬 Vidéo partagée</strong>
+                Collez un lien puis chargez-le.
+                La lecture sera synchronisée entre vous deux.
+              </div>
+
+            </div>
+
           </div>
 
           <div class="camera-card remote">
-            <video id="remoteVideo" autoplay playsinline></video>
-            <div class="video-label">Ta copine</div>
-            <div id="remoteEmpty" class="camera-empty">En attente de sa caméra…</div>
-            <button id="enableRemoteAudioBtn" class="remote-audio-btn" type="button">🔊 Activer le son</button>
+
+            <video
+              id="remoteVideo"
+              autoplay
+              playsinline
+            ></video>
+
+            <div class="video-label">
+              Ta copine
+            </div>
+
+            <div id="remoteEmpty" class="camera-empty">
+              En attente de sa caméra…
+            </div>
+
+            <button
+              id="enableRemoteAudioBtn"
+              class="remote-audio-btn"
+              type="button"
+            >
+              🔊 Activer le son
+            </button>
+
           </div>
 
           <div class="camera-card local">
-            <video id="localVideo" autoplay muted playsinline></video>
-            <div class="video-label">Toi</div>
-            <div id="localEmpty" class="camera-empty">Ta caméra apparaîtra ici</div>
+
+            <video
+              id="localVideo"
+              autoplay
+              muted
+              playsinline
+            ></video>
+
+            <div class="video-label">
+              Toi
+            </div>
+
+            <div id="localEmpty" class="camera-empty">
+              Ta caméra apparaîtra ici
+            </div>
+
           </div>
+
         </div>
 
         <div class="watch-controls">
-          <button id="playPauseBtn" class="btn secondary" disabled>▶ Lecture</button>
-          <input id="videoProgress" type="range" min="0" max="100" step="0.1" value="0" disabled aria-label="Progression de la vidéo" />
-          <span id="timeLabel" class="time-label">00:00 / 00:00</span>
+
+          <button
+            id="playPauseBtn"
+            class="btn secondary"
+            disabled
+          >
+            ▶ Lecture
+          </button>
+
+          <input
+            id="videoProgress"
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            value="0"
+            disabled
+            aria-label="Progression de la vidéo"
+          />
+
+          <span id="timeLabel" class="time-label">
+            00:00 / 00:00
+          </span>
+
           <div class="watch-actions">
-            <button id="back10Btn" class="btn secondary" disabled>↩ 10s</button>
-            <button id="forward10Btn" class="btn secondary" disabled>10s ↪</button>
-            <button id="fullscreenBtn" class="btn secondary fullscreen-btn" type="button">⛶ Plein écran</button>
+
+            <button
+              id="back10Btn"
+              class="btn secondary"
+              disabled
+            >
+              ↩ 10s
+            </button>
+
+            <button
+              id="forward10Btn"
+              class="btn secondary"
+              disabled
+            >
+              10s ↪
+            </button>
+
+            <button
+              id="fullscreenBtn"
+              class="btn secondary fullscreen-btn"
+              type="button"
+            >
+              ⛶ Plein écran
+            </button>
+
           </div>
+
         </div>
-        <div class="video-help">Formats pris en charge : MP4/WebM/Ogg, flux HLS (.m3u8) et liens YouTube. Les commandes lecture/pause et la position sont synchronisées pour les deux personnes.</div>
-        <div class="fullscreen-hint">Le bouton plein écran agrandit la zone vidéo <strong>sans enlever vos deux petites caméras</strong>.</div>
+
+        <div class="video-help">
+          Formats pris en charge : MP4/WebM/Ogg, flux HLS (.m3u8)
+          et liens YouTube. Les commandes lecture/pause et la position
+          sont synchronisées pour les deux personnes.
+        </div>
+
+        <div class="fullscreen-hint">
+          Le bouton plein écran agrandit la zone vidéo
+          <strong>sans enlever vos deux petites caméras</strong>.
+        </div>
+
       </div>
 
       <div class="controls">
-        <button id="micBtn" class="control" title="Micro" disabled>🎙️</button>
-        <button id="camBtn" class="control" title="Caméra" disabled>📹</button>
-        <button id="hangupBtn" class="control hangup danger" disabled>Raccrocher</button>
+
+        <button
+          id="micBtn"
+          class="control"
+          title="Micro"
+          disabled
+        >
+          🎙️
+        </button>
+
+        <button
+          id="camBtn"
+          class="control"
+          title="Caméra"
+          disabled
+        >
+          📹
+        </button>
+
+        <button
+          id="hangupBtn"
+          class="control hangup danger"
+          disabled
+        >
+          Raccrocher
+        </button>
+
       </div>
+
       <div class="hint">
-        Les appels utilisent WebRTC. Pour un appel depuis Internet, le site doit être servi en <strong>HTTPS</strong> (sauf en local).
+        Les appels utilisent WebRTC.
+        Pour un appel depuis Internet, le site doit être servi en
+        <strong>HTTPS</strong> (sauf en local).
       </div>
+
     </section>
+
   </main>
 
   <div id="toast" class="toast"></div>
 
   <script src="/rtc-config.js"></script>
   <script src="/socket.io/socket.io.js"></script>
+
   <script>
     const socket = io();
 
@@ -374,992 +876,4146 @@
     const createBtn = document.getElementById('createBtn');
     const joinBtn = document.getElementById('joinBtn');
     const copyBtn = document.getElementById('copyBtn');
+
     const micBtn = document.getElementById('micBtn');
     const camBtn = document.getElementById('camBtn');
     const hangupBtn = document.getElementById('hangupBtn');
+
     const localVideo = document.getElementById('localVideo');
     const remoteVideo = document.getElementById('remoteVideo');
+
     const localEmpty = document.getElementById('localEmpty');
     const remoteEmpty = document.getElementById('remoteEmpty');
-    const enableRemoteAudioBtn = document.getElementById('enableRemoteAudioBtn');
+
+    const enableRemoteAudioBtn =
+      document.getElementById('enableRemoteAudioBtn');
+
     const statusText = document.getElementById('statusText');
     const statusDot = document.getElementById('statusDot');
     const roomCount = document.getElementById('roomCount');
+
     const toast = document.getElementById('toast');
-    const videoUrlInput = document.getElementById('videoUrlInput');
-    const loadVideoBtn = document.getElementById('loadVideoBtn');
-    const clearVideoBtn = document.getElementById('clearVideoBtn');
-    const sharedMedia = document.getElementById('sharedMedia');
-    const watchEmpty = document.getElementById('watchEmpty');
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    const videoProgress = document.getElementById('videoProgress');
-    const timeLabel = document.getElementById('timeLabel');
-    const back10Btn = document.getElementById('back10Btn');
-    const forward10Btn = document.getElementById('forward10Btn');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
-    const exitFullscreenBtn = document.getElementById('exitFullscreenBtn');
-    const watchLayout = document.querySelector('.watch-layout');
-    const testMediaBtn = document.getElementById('testMediaBtn');
-    const cameraStatus = document.getElementById('cameraStatus');
-    const microphoneStatus = document.getElementById('microphoneStatus');
-    const secureContextHint = document.getElementById('secureContextHint');
-    const mediaError = document.getElementById('mediaError');
+
+    const videoUrlInput =
+      document.getElementById('videoUrlInput');
+
+    const loadVideoBtn =
+      document.getElementById('loadVideoBtn');
+
+    const clearVideoBtn =
+      document.getElementById('clearVideoBtn');
+
+    const sharedMedia =
+      document.getElementById('sharedMedia');
+
+    const watchEmpty =
+      document.getElementById('watchEmpty');
+
+    const playPauseBtn =
+      document.getElementById('playPauseBtn');
+
+    const videoProgress =
+      document.getElementById('videoProgress');
+
+    const timeLabel =
+      document.getElementById('timeLabel');
+
+    const back10Btn =
+      document.getElementById('back10Btn');
+
+    const forward10Btn =
+      document.getElementById('forward10Btn');
+
+    const fullscreenBtn =
+      document.getElementById('fullscreenBtn');
+
+    const exitFullscreenBtn =
+      document.getElementById('exitFullscreenBtn');
+
+    const watchLayout =
+      document.querySelector('.watch-layout');
+
+    const testMediaBtn =
+      document.getElementById('testMediaBtn');
+
+    const cameraStatus =
+      document.getElementById('cameraStatus');
+
+    const microphoneStatus =
+      document.getElementById('microphoneStatus');
+
+    const secureContextHint =
+      document.getElementById('secureContextHint');
+
+    const mediaError =
+      document.getElementById('mediaError');
+
 
     let roomId = '';
     let localStream = null;
+
     let peerConnection = null;
+
     let pendingIceCandidates = [];
+
     let isInitiator = false;
     let joined = false;
+
     let toastTimer = null;
+
     let sharedVideo = null;
     let sharedVideoType = null;
+
     let youtubePlayer = null;
     let youtubeReady = false;
+
     let hlsInstance = null;
+
     let applyingRemoteCommand = false;
+
     let suppressVideoBroadcastUntil = 0;
+
     let progressTimer = null;
-    let lastSyncSent = 0;
+
     let remoteStream = null;
+
     let renegotiationTimer = null;
+
     let lastAppliedVideoKey = '';
+
+    /*
+     * Nouveauté :
+     * permet d'attendre que le MP4 soit réellement prêt
+     * avant d'appliquer l'état reçu de la room.
+     */
+    let pendingDirectState = null;
+
 
     const rtcConfig = {
       iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
+        {
+          urls: 'stun:stun.l.google.com:19302'
+        },
+        {
+          urls: 'stun:stun1.l.google.com:19302'
+        }
       ],
+
       bundlePolicy: 'max-bundle',
       rtcpMuxPolicy: 'require'
     };
 
-    const turnUrls = Array.isArray(window.__RTC_CONFIG__?.turnUrls)
-      ? window.__RTC_CONFIG__.turnUrls
-      : (window.__RTC_CONFIG__?.turnUrl ? [window.__RTC_CONFIG__.turnUrl] : []);
+
+    const turnUrls =
+      Array.isArray(window.__RTC_CONFIG__?.turnUrls)
+        ? window.__RTC_CONFIG__.turnUrls
+        : (
+            window.__RTC_CONFIG__?.turnUrl
+              ? [window.__RTC_CONFIG__.turnUrl]
+              : []
+          );
+
+
     if (turnUrls.length) {
+
       rtcConfig.iceServers.push({
         urls: turnUrls,
-        username: window.__RTC_CONFIG__.turnUsername || undefined,
-        credential: window.__RTC_CONFIG__.turnCredential || undefined
+
+        username:
+          window.__RTC_CONFIG__.turnUsername || undefined,
+
+        credential:
+          window.__RTC_CONFIG__.turnCredential || undefined
       });
+
     }
 
 
     function setMediaStatus(element, state, text) {
+
       element.classList.remove('ok', 'bad');
-      if (state === 'ok') element.classList.add('ok');
-      if (state === 'bad') element.classList.add('bad');
+
+      if (state === 'ok') {
+        element.classList.add('ok');
+      }
+
+      if (state === 'bad') {
+        element.classList.add('bad');
+      }
+
       element.querySelector('strong').textContent = text;
     }
 
+
     function errorText(error) {
-      const name = error?.name || 'UnknownError';
+
+      const name =
+        error?.name || 'UnknownError';
+
       const map = {
-        NotAllowedError: 'Brave bloque l’accès ou la permission n’est pas réellement accordée pour ce site. Vérifie les permissions du domaine Render.',
-        NotFoundError: 'Aucune caméra ou aucun micro compatible n’a été trouvé.',
-        NotReadableError: 'La caméra ou le micro est déjà utilisé, désactivé au niveau du système, ou inaccessible au pilote.',
-        OverconstrainedError: 'Les périphériques disponibles ne correspondent pas aux contraintes demandées.',
-        SecurityError: 'L’accès multimédia est bloqué par une règle de sécurité du navigateur.',
-        AbortError: 'Brave ou Windows a interrompu l’accès au périphérique. Une autre application peut utiliser la caméra/micro, ou le pilote peut avoir besoin d’être réinitialisé.',
-        InvalidStateError: 'La page n’est pas dans un état actif pour demander la caméra/le micro.',
-        TypeError: 'La caméra/le micro ne sont pas disponibles dans ce contexte. Vérifie que tu utilises bien HTTPS.'
+
+        NotAllowedError:
+          'Brave bloque l’accès ou la permission n’est pas réellement accordée pour ce site. Vérifie les permissions du domaine Render.',
+
+        NotFoundError:
+          'Aucune caméra ou aucun micro compatible n’a été trouvé.',
+
+        NotReadableError:
+          'La caméra ou le micro est déjà utilisé, désactivé au niveau du système, ou inaccessible au pilote.',
+
+        OverconstrainedError:
+          'Les périphériques disponibles ne correspondent pas aux contraintes demandées.',
+
+        SecurityError:
+          'L’accès multimédia est bloqué par une règle de sécurité du navigateur.',
+
+        AbortError:
+          'Brave ou Windows a interrompu l’accès au périphérique. Une autre application peut utiliser la caméra/micro, ou le pilote peut avoir besoin d’être réinitialisé.',
+
+        InvalidStateError:
+          'La page n’est pas dans un état actif pour demander la caméra/le micro.',
+
+        TypeError:
+          'La caméra/le micro ne sont pas disponibles dans ce contexte. Vérifie que tu utilises bien HTTPS.'
       };
+
       return `${name}: ${map[name] || 'Erreur inconnue lors de l’accès à la caméra ou au micro.'}`;
     }
 
+
     async function readPermissionState() {
-      if (!navigator.permissions?.query) return;
-      for (const item of [
-        ['camera', cameraStatus],
-        ['microphone', microphoneStatus]
-      ]) {
-        try {
-          const permission = await navigator.permissions.query({ name: item[0] });
-          const value = permission.state;
-          if (value === 'granted') setMediaStatus(item[1], 'ok', 'Autorisé');
-          else if (value === 'denied') setMediaStatus(item[1], 'bad', 'Bloqué');
-          else setMediaStatus(item[1], '', 'À autoriser');
-          permission.onchange = () => readPermissionState();
-        } catch (_) {
-          // Some browsers do not expose camera/microphone permission state.
-        }
+
+      if (!navigator.permissions?.query) {
+        return;
       }
+
+      for (
+        const item of [
+          ['camera', cameraStatus],
+          ['microphone', microphoneStatus]
+        ]
+      ) {
+
+        try {
+
+          const permission =
+            await navigator.permissions.query({
+              name: item[0]
+            });
+
+          const value =
+            permission.state;
+
+          if (value === 'granted') {
+
+            setMediaStatus(
+              item[1],
+              'ok',
+              'Autorisé'
+            );
+
+          } else if (value === 'denied') {
+
+            setMediaStatus(
+              item[1],
+              'bad',
+              'Bloqué'
+            );
+
+          } else {
+
+            setMediaStatus(
+              item[1],
+              '',
+              'À autoriser'
+            );
+
+          }
+
+          permission.onchange =
+            () => readPermissionState();
+
+        } catch (_) {
+          // Certains navigateurs ne permettent pas cet état.
+        }
+
+      }
+
     }
+
 
     function showToast(message) {
+
       clearTimeout(toastTimer);
+
       toast.textContent = message;
+
       toast.classList.add('show');
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+
+      toastTimer =
+        setTimeout(
+          () => toast.classList.remove('show'),
+          3200
+        );
     }
+
 
     function setStatus(text, online = false) {
+
       statusText.textContent = text;
-      statusDot.classList.toggle('online', online);
+
+      statusDot.classList.toggle(
+        'online',
+        online
+      );
     }
+
 
     function setRoomCount(count) {
-      const safe = Math.max(0, Math.min(2, Number(count) || 0));
-      roomCount.textContent = `• ${safe}/2`;
-      if (safe === 2) roomCount.style.color = 'var(--ok)';
-      else roomCount.style.color = '#d9dbea';
+
+      const safe =
+        Math.max(
+          0,
+          Math.min(
+            2,
+            Number(count) || 0
+          )
+        );
+
+      roomCount.textContent =
+        `• ${safe}/2`;
+
+      if (safe === 2) {
+
+        roomCount.style.color =
+          'var(--ok)';
+
+      } else {
+
+        roomCount.style.color =
+          '#d9dbea';
+
+      }
+
     }
+
 
     function setRoomInUrl(room) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('room', room);
-      history.replaceState({}, '', url);
+
+      const url =
+        new URL(
+          window.location.href
+        );
+
+      url.searchParams.set(
+        'room',
+        room
+      );
+
+      history.replaceState(
+        {},
+        '',
+        url
+      );
     }
+
 
     function makeRoomCode() {
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+      const chars =
+        'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
       let code = '';
-      for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
-      return code.slice(0, 4) + '-' + code.slice(4);
+
+      for (let i = 0; i < 8; i++) {
+
+        code +=
+          chars[
+            Math.floor(
+              Math.random() * chars.length
+            )
+          ];
+
+      }
+
+      return (
+        code.slice(0, 4) +
+        '-' +
+        code.slice(4)
+      );
+
     }
 
+
     function extractYouTubeId(url) {
+
       try {
-        const u = new URL(url);
-        if (u.hostname.includes('youtu.be')) return u.pathname.slice(1) || null;
-        if (u.hostname.includes('youtube.com')) {
-          if (u.pathname === '/watch') return u.searchParams.get('v');
-          if (u.pathname.startsWith('/shorts/')) return u.pathname.split('/')[2];
-          if (u.pathname.startsWith('/embed/')) return u.pathname.split('/')[2];
+
+        const u =
+          new URL(url);
+
+        if (
+          u.hostname.includes('youtu.be')
+        ) {
+
+          return (
+            u.pathname.slice(1) ||
+            null
+          );
+
         }
+
+        if (
+          u.hostname.includes('youtube.com')
+        ) {
+
+          if (u.pathname === '/watch') {
+
+            return u.searchParams.get('v');
+
+          }
+
+          if (
+            u.pathname.startsWith('/shorts/')
+          ) {
+
+            return u.pathname.split('/')[2];
+
+          }
+
+          if (
+            u.pathname.startsWith('/embed/')
+          ) {
+
+            return u.pathname.split('/')[2];
+
+          }
+
+        }
+
       } catch (_) {}
+
       return null;
     }
 
+
     function detectVideoType(url) {
-      const value = String(url || '').trim();
-      if (extractYouTubeId(value)) return 'youtube';
+
+      const value =
+        String(url || '').trim();
+
+      if (extractYouTubeId(value)) {
+        return 'youtube';
+      }
+
       try {
-        const pathname = new URL(value, window.location.href).pathname.toLowerCase();
-        if (pathname.endsWith('.m3u8') || /\.m3u8(?:$|[?#])/i.test(value)) return 'hls';
+
+        const pathname =
+          new URL(
+            value,
+            window.location.href
+          ).pathname.toLowerCase();
+
+        if (
+          pathname.endsWith('.m3u8') ||
+          /\.m3u8(?:$|[?#])/i.test(value)
+        ) {
+
+          return 'hls';
+
+        }
+
       } catch (_) {}
+
       return 'direct';
     }
 
+
     function formatTime(seconds) {
-      if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
-      const total = Math.floor(seconds);
-      const mins = Math.floor(total / 60);
-      const secs = total % 60;
-      const hours = Math.floor(mins / 60);
-      if (hours > 0) return `${String(hours).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+      if (
+        !Number.isFinite(seconds) ||
+        seconds < 0
+      ) {
+
+        return '00:00';
+
+      }
+
+      const total =
+        Math.floor(seconds);
+
+      const mins =
+        Math.floor(total / 60);
+
+      const secs =
+        total % 60;
+
+      const hours =
+        Math.floor(mins / 60);
+
+      if (hours > 0) {
+
+        return (
+          `${String(hours).padStart(2, '0')}:` +
+          `${String(mins % 60).padStart(2, '0')}:` +
+          `${String(secs).padStart(2, '0')}`
+        );
+
+      }
+
+      return (
+        `${String(mins).padStart(2, '0')}:` +
+        `${String(secs).padStart(2, '0')}`
+      );
     }
 
+
     function getSharedTime() {
-      if (sharedVideoType === 'direct' && sharedVideo) return sharedVideo.currentTime || 0;
-      if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) return youtubePlayer.getCurrentTime() || 0;
+
+      if (
+        sharedVideoType === 'direct' &&
+        sharedVideo
+      ) {
+
+        return (
+          sharedVideo.currentTime || 0
+        );
+
+      }
+
+      if (
+        sharedVideoType === 'youtube' &&
+        youtubePlayer &&
+        youtubeReady
+      ) {
+
+        return (
+          youtubePlayer.getCurrentTime() || 0
+        );
+
+      }
+
       return 0;
     }
 
+
     function isSharedPlaying() {
-      if (sharedVideoType === 'direct' && sharedVideo) return !sharedVideo.paused;
-      if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) return youtubePlayer.getPlayerState() === 1;
+
+      if (
+        sharedVideoType === 'direct' &&
+        sharedVideo
+      ) {
+
+        return !sharedVideo.paused;
+
+      }
+
+      if (
+        sharedVideoType === 'youtube' &&
+        youtubePlayer &&
+        youtubeReady
+      ) {
+
+        return (
+          youtubePlayer.getPlayerState() ===
+          1
+        );
+
+      }
+
       return false;
     }
 
+
     function updateVideoControls() {
-      const loaded = Boolean(sharedVideo || (youtubePlayer && youtubeReady));
-      [clearVideoBtn, playPauseBtn, videoProgress, back10Btn, forward10Btn].forEach(el => el.disabled = !loaded);
+
+      const loaded =
+        Boolean(
+          sharedVideo ||
+          (youtubePlayer && youtubeReady)
+        );
+
+      [
+        clearVideoBtn,
+        playPauseBtn,
+        videoProgress,
+        back10Btn,
+        forward10Btn
+      ].forEach(
+        el => el.disabled = !loaded
+      );
+
       if (!loaded) {
-        timeLabel.textContent = '00:00 / 00:00';
+
+        timeLabel.textContent =
+          '00:00 / 00:00';
+
         videoProgress.value = 0;
+
         return;
       }
 
-      const current = getSharedTime();
-      const duration = sharedVideoType === 'direct'
-        ? (Number.isFinite(sharedVideo?.duration) ? sharedVideo.duration : 0)
-        : (youtubePlayer && youtubeReady ? youtubePlayer.getDuration() || 0 : 0);
+      const current =
+        getSharedTime();
 
-      videoProgress.max = duration > 0 ? duration : 100;
-      videoProgress.value = Math.min(current, duration || 100);
-      timeLabel.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
-      playPauseBtn.textContent = isSharedPlaying() ? '⏸ Pause' : '▶ Lecture';
+      const duration =
+        sharedVideoType === 'direct'
+          ? (
+              Number.isFinite(
+                sharedVideo?.duration
+              )
+                ? sharedVideo.duration
+                : 0
+            )
+          : (
+              youtubePlayer &&
+              youtubeReady
+                ? youtubePlayer.getDuration() || 0
+                : 0
+            );
+
+      videoProgress.max =
+        duration > 0
+          ? duration
+          : 100;
+
+      videoProgress.value =
+        Math.min(
+          current,
+          duration || 100
+        );
+
+      timeLabel.textContent =
+        `${formatTime(current)} / ${formatTime(duration)}`;
+
+      playPauseBtn.textContent =
+        isSharedPlaying()
+          ? '⏸ Pause'
+          : '▶ Lecture';
+
     }
 
-    function sendVideoCommand(action, extra = {}) {
-      if (!joined) return;
+
+    function sendVideoCommand(
+      action,
+      extra = {}
+    ) {
+
+      if (!joined) {
+        return;
+      }
+
       const payload = {
+
         room: roomId,
+
         action,
-        currentTime: extra.currentTime ?? getSharedTime(),
-        playing: extra.playing ?? isSharedPlaying(),
+
+        currentTime:
+          extra.currentTime ??
+          getSharedTime(),
+
+        playing:
+          extra.playing ??
+          isSharedPlaying(),
+
         ...extra
       };
-      socket.emit('video-command', payload);
+
+      socket.emit(
+        'video-command',
+        payload
+      );
+
     }
 
-    function cleanupSharedVideo() {
-      clearInterval(progressTimer);
-      progressTimer = null;
-      if (sharedVideo) {
-        sharedVideo.pause();
-        sharedVideo.removeAttribute('src');
-        sharedVideo.load();
-      }
-      if (hlsInstance) {
-        try { hlsInstance.destroy(); } catch (_) {}
-        hlsInstance = null;
-      }
-      sharedVideo = null;
-      youtubePlayer = null;
-      youtubeReady = false;
-      sharedVideoType = null;
-      lastAppliedVideoKey = '';
-      sharedMedia.innerHTML = '';
-      sharedMedia.appendChild(watchEmpty);
-      watchEmpty.style.display = 'grid';
-      videoUrlInput.value = '';
-      updateVideoControls();
-    }
 
-    function createYouTubePlayer(videoId, startAt = 0, shouldPlay = false) {
-      youtubeReady = false;
-      sharedMedia.innerHTML = '';
-      const host = document.createElement('div');
-      host.id = 'youtubePlayer';
-      host.style.width = '100%';
-      host.style.height = '100%';
-      sharedMedia.appendChild(host);
+    function cleanupSharedVideo(
+      { resetKey = true } = {}
+    ) {
 
-      const startPlayer = () => {
-        youtubePlayer = new YT.Player('youtubePlayer', {
-          width: '100%',
-          height: '100%',
-          videoId,
-          playerVars: { autoplay: shouldPlay ? 1 : 0, controls: 1, fs: 0, rel: 0, playsinline: 1, start: Math.floor(startAt) },
-          events: {
-            onReady: () => {
-              youtubeReady = true;
-              updateVideoControls();
-              startProgressTimer();
-              if (startAt > 0) youtubePlayer.seekTo(startAt, true);
-              if (shouldPlay) {
-                youtubePlayer.playVideo();
-              }
-              // Do not request the state again here. A previous version did so,
-              // which caused a load -> state -> load loop and could destabilize
-              // the WebRTC connection when a video was started.
-            },
-            onStateChange: (event) => {
-              if (applyingRemoteCommand) return;
-              if (event.data === YT.PlayerState.PLAYING) sendVideoCommand('play', { currentTime: youtubePlayer.getCurrentTime(), playing: true });
-              if (event.data === YT.PlayerState.PAUSED) sendVideoCommand('pause', { currentTime: youtubePlayer.getCurrentTime(), playing: false });
-              updateVideoControls();
-            }
-          }
-        });
-      };
-
-      if (window.YT && window.YT.Player) startPlayer();
-      else window.onYouTubeIframeAPIReady = startPlayer;
-    }
-
-    function startProgressTimer() {
-      clearInterval(progressTimer);
-      progressTimer = setInterval(updateVideoControls, 400);
-    }
-
-    function loadSharedVideo(url, type, startAt = 0, shouldPlay = false) {
-      const cleanUrl = String(url || '').trim();
-      if (!cleanUrl) return;
-
-      const detectedType = detectVideoType(cleanUrl);
-      const nextType = detectedType || type || 'direct';
-      const videoKey = `${nextType}|${cleanUrl}`;
-
-      // Ignore an identical state replay unless it is a meaningful seek/play update.
-      // This prevents the two clients from repeatedly rebuilding the same player.
-      if (videoKey === lastAppliedVideoKey && sharedVideoType === nextType) {
-        if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) {
-          const current = youtubePlayer.getCurrentTime() || 0;
-          if (Math.abs(current - Number(startAt || 0)) > 1.5) youtubePlayer.seekTo(Number(startAt || 0), true);
-          if (shouldPlay && youtubePlayer.getPlayerState() !== YT.PlayerState.PLAYING) youtubePlayer.playVideo();
-          if (!shouldPlay && youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING) youtubePlayer.pauseVideo();
-        } else if (sharedVideoType === 'direct' && sharedVideo) {
-          if (Math.abs((sharedVideo.currentTime || 0) - Number(startAt || 0)) > 1.5) sharedVideo.currentTime = Number(startAt || 0);
-          if (shouldPlay && sharedVideo.paused) sharedVideo.play().catch(() => {});
-          if (!shouldPlay && !sharedVideo.paused) sharedVideo.pause();
-        }
-        return;
-      }
-
-      lastAppliedVideoKey = videoKey;
-      cleanupSharedVideo();
-
-      // Always inspect the URL too. The server may store HLS as "direct", but
-      // .m3u8 must still be initialized through hls.js on browsers that need it.
-      sharedVideoType = nextType;
-      videoUrlInput.value = cleanUrl;
-      watchEmpty.style.display = 'none';
-
-      if (sharedVideoType === 'youtube') {
-        const videoId = extractYouTubeId(cleanUrl);
-        if (!videoId) {
-          showToast('Lien YouTube invalide.');
-          cleanupSharedVideo();
-          return;
-        }
-        createYouTubePlayer(videoId, startAt, shouldPlay);
-        updateVideoControls();
-        return;
-      }
-
-      const video = document.createElement('video');
-      video.controls = false;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.setAttribute('playsinline', '');
-      video.setAttribute('webkit-playsinline', '');
-      video.crossOrigin = 'anonymous';
-      sharedMedia.innerHTML = '';
-      sharedMedia.appendChild(video);
-      sharedVideo = video;
-
-      const finishInitialSeek = () => {
-        if (startAt > 0 && Number.isFinite(video.duration) && video.duration > 0) {
-          try { video.currentTime = Math.min(startAt, video.duration); } catch (_) {}
-        }
-        updateVideoControls();
-        if (shouldPlay) {
-          video.play().catch(() => showToast('La vidéo est chargée. Clique sur ▶ Lecture si Brave bloque la lecture automatique.'));
-        }
-      };
-
-      video.addEventListener('loadedmetadata', finishInitialSeek, { once: true });
-      video.addEventListener('durationchange', updateVideoControls);
-      video.addEventListener('timeupdate', updateVideoControls);
-      video.addEventListener('play', () => {
-        if (!applyingRemoteCommand && Date.now() > suppressVideoBroadcastUntil) sendVideoCommand('play', { currentTime: video.currentTime, playing: true });
-        updateVideoControls();
-      });
-      video.addEventListener('pause', () => {
-        if (!applyingRemoteCommand && Date.now() > suppressVideoBroadcastUntil) sendVideoCommand('pause', { currentTime: video.currentTime, playing: false });
-        updateVideoControls();
-      });
-      video.addEventListener('seeking', () => {
-        if (!applyingRemoteCommand && Date.now() > suppressVideoBroadcastUntil) sendVideoCommand('seek', { currentTime: video.currentTime });
-      });
-      video.addEventListener('seeked', () => {
-        if (!applyingRemoteCommand && Date.now() > suppressVideoBroadcastUntil) sendVideoCommand('seek', { currentTime: video.currentTime });
-        updateVideoControls();
-      });
-      video.addEventListener('error', () => {
-        const code = video.error?.code;
-        const details = code ? ` (code ${code})` : '';
-        showToast(`Impossible de lire la vidéo${details}. Vérifie que le serveur autorise CORS et que le lien n'est pas expiré.`);
-      });
-
-      if (sharedVideoType === 'hls') {
-        if (window.Hls && Hls.isSupported()) {
-          hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: false });
-          hlsInstance.on(Hls.Events.MEDIA_ATTACHED, () => {
-            hlsInstance.loadSource(cleanUrl);
-          });
-          hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-            finishInitialSeek();
-          });
-          hlsInstance.on(Hls.Events.ERROR, (_event, data) => {
-            console.warn('HLS error:', data);
-            if (data?.fatal) {
-              let message = 'Erreur HLS.';
-              if (data.type === Hls.ErrorTypes.NETWORK_ERROR) message = 'Le flux HLS ne répond pas ou son lien a expiré.';
-              else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) message = 'Le navigateur n’arrive pas à décoder ce flux HLS.';
-              else if (data.details === 'manifestLoadError') message = 'Impossible de charger le fichier .m3u8. Le serveur peut bloquer CORS.';
-              showToast(message);
-            }
-          });
-          hlsInstance.attachMedia(video);
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-          // Native HLS support (Safari and some mobile browsers).
-          video.src = cleanUrl;
-        } else {
-          showToast('Ce navigateur ne prend pas en charge HLS (.m3u8).');
-          cleanupSharedVideo();
-          return;
-        }
-      } else {
-        video.src = cleanUrl;
-      }
-
-      startProgressTimer();
-      updateVideoControls();
-    }
-
-    function applyLocalStream(stream) {
-      localStream = stream;
-      localVideo.srcObject = stream;
-      localVideo.muted = true;
-      localVideo.playsInline = true;
-      localVideo.autoplay = true;
-      localVideo.play().catch(() => {});
-      localEmpty.style.display = 'none';
-      micBtn.disabled = stream.getAudioTracks().length === 0;
-      camBtn.disabled = stream.getVideoTracks().length === 0;
-      setMediaStatus(cameraStatus, stream.getVideoTracks().length ? 'ok' : 'bad', stream.getVideoTracks().length ? 'Active' : 'Introuvable');
-      setMediaStatus(microphoneStatus, stream.getAudioTracks().length ? 'ok' : 'bad', stream.getAudioTracks().length ? 'Actif' : 'Introuvable');
-      secureContextHint.textContent = 'Caméra et micro prêts.';
-    }
-
-    async function requestMediaRobust() {
-      // Start with the simplest constraints: Brave/Windows is more reliable with these
-      // than with facingMode/ideal-resolution constraints on some webcams.
-      try {
-        return await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      } catch (firstError) {
-        const firstName = firstError?.name || 'UnknownError';
-        console.warn('Combined camera+micro request failed:', firstError);
-
-        // A second attempt separates the devices. This helps when one device is
-        // temporarily unavailable even though the permission itself is granted.
-        let videoStream = null;
-        let audioStream = null;
-        try {
-          videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        } catch (videoError) {
-          console.warn('Video-only request failed:', videoError);
-        }
-        try {
-          audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        } catch (audioError) {
-          console.warn('Audio-only request failed:', audioError);
-        }
-
-        if (videoStream || audioStream) {
-          const tracks = [
-            ...(videoStream ? videoStream.getVideoTracks() : []),
-            ...(audioStream ? audioStream.getAudioTracks() : [])
-          ];
-          const merged = new MediaStream(tracks);
-          videoStream?.getTracks().forEach(t => { if (!tracks.includes(t)) t.stop(); });
-          audioStream?.getTracks().forEach(t => { if (!tracks.includes(t)) t.stop(); });
-          if (tracks.length) return merged;
-        }
-
-        // Preserve the original error name so the UI can give the right diagnosis.
-        firstError.__combinedFailure = firstName;
-        throw firstError;
-      }
-    }
-
-    async function prepareMedia({ fromTestButton = false } = {}) {
-      if (localStream && localStream.getTracks().some(track => track.readyState === 'live')) {
-        applyLocalStream(localStream);
-        return true;
-      }
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null;
-      }
-
-      mediaError.textContent = '';
-      if (!window.isSecureContext) {
-        mediaError.textContent = 'Cette page n’est pas sécurisée. Ouvre le lien Render en HTTPS, pas en HTTP.';
-        setMediaStatus(cameraStatus, 'bad', 'HTTPS requis');
-        setMediaStatus(microphoneStatus, 'bad', 'HTTPS requis');
-        showToast('La caméra et le micro nécessitent HTTPS.');
-        return false;
-      }
-      if (!navigator.mediaDevices?.getUserMedia) {
-        mediaError.textContent = 'getUserMedia n’est pas disponible dans ce navigateur/contexte.';
-        setMediaStatus(cameraStatus, 'bad', 'Indisponible');
-        setMediaStatus(microphoneStatus, 'bad', 'Indisponible');
-        showToast('Caméra/micro indisponibles dans ce contexte.');
-        return false;
-      }
-
-      try {
-        setMediaStatus(cameraStatus, '', 'Ouverture…');
-        setMediaStatus(microphoneStatus, '', 'Ouverture…');
-        secureContextHint.textContent = 'Ouverture de la caméra et du micro…';
-
-        localStream = await requestMediaRobust();
-        applyLocalStream(localStream);
-        await readPermissionState();
-        if (fromTestButton) showToast('✅ Caméra et micro fonctionnent.');
-        return true;
-      } catch (error) {
-        console.error('Camera/micro final error:', error);
-        localStream?.getTracks().forEach(track => track.stop());
-        localStream = null;
-        localVideo.srcObject = null;
-        localEmpty.style.display = 'grid';
-        micBtn.disabled = true;
-        camBtn.disabled = true;
-
-        const deviceInfo = await (async () => {
-          try {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const cams = devices.filter(d => d.kind === 'videoinput').length;
-            const mics = devices.filter(d => d.kind === 'audioinput').length;
-            return ` Périphériques détectés : ${cams} caméra(s), ${mics} micro(s).`;
-          } catch (_) {
-            return '';
-          }
-        })();
-
-        const details = errorText(error) + deviceInfo;
-        mediaError.textContent = details;
-        if (error?.name === 'NotFoundError') {
-          setMediaStatus(cameraStatus, 'bad', 'Introuvable');
-          setMediaStatus(microphoneStatus, 'bad', 'Introuvable');
-        } else if (error?.name === 'NotAllowedError' || error?.name === 'SecurityError') {
-          setMediaStatus(cameraStatus, 'bad', 'Bloqué');
-          setMediaStatus(microphoneStatus, 'bad', 'Bloqué');
-        } else if (error?.name === 'NotReadableError' || error?.name === 'AbortError') {
-          setMediaStatus(cameraStatus, 'bad', 'Périphérique occupé');
-          setMediaStatus(microphoneStatus, 'bad', 'Périphérique occupé');
-          secureContextHint.textContent = 'Ferme les applications qui utilisent la caméra/micro, puis réessaie.';
-        } else {
-          setMediaStatus(cameraStatus, 'bad', 'Erreur');
-          setMediaStatus(microphoneStatus, 'bad', 'Erreur');
-        }
-        await readPermissionState();
-
-        if (error?.name === 'AbortError' || error?.name === 'NotReadableError') {
-          showToast('Le périphérique est probablement occupé. Ferme Teams, Zoom, Discord, OBS ou l’application Caméra, puis réessaie.');
-        } else {
-          showToast(fromTestButton ? details : 'Caméra/micro non disponibles : utilise d’abord « Tester caméra + micro ».');
-        }
-        return false;
-      }
-    }
-
-    function createPeerConnection() {
-      if (peerConnection) return peerConnection;
-      peerConnection = new RTCPeerConnection(rtcConfig);
-
-      localStream?.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-      peerConnection.ontrack = async (event) => {
-        if (event.streams && event.streams[0]) {
-          remoteStream = event.streams[0];
-        } else {
-          remoteStream = remoteStream || new MediaStream();
-          if (!remoteStream.getTracks().includes(event.track)) remoteStream.addTrack(event.track);
-        }
-        remoteVideo.srcObject = remoteStream;
-        remoteVideo.muted = false;
-        remoteVideo.volume = 1;
-        remoteEmpty.style.display = 'none';
-        enableRemoteAudioBtn.classList.add('show');
-        try {
-          await remoteVideo.play();
-          enableRemoteAudioBtn.classList.remove('show');
-        } catch (error) {
-          console.warn('Remote media autoplay blocked:', error);
-          showToast('La caméra est connectée. Appuie sur 🔊 Activer le son pour démarrer l’audio.');
-        }
-      };
-
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) socket.emit('signal', { room: roomId, data: { type: 'candidate', candidate: event.candidate } });
-      };
-
-      peerConnection.onconnectionstatechange = () => {
-        const state = peerConnection.connectionState;
-        console.log('WebRTC connectionState:', state);
-        if (state === 'connected') {
-          setStatus('Vous êtes connectés ❤️', true);
-          showToast('Caméra et micro de ta copine connectés ❤️');
-        }
-        if (state === 'connecting') setStatus('Connexion vidéo…');
-        if (state === 'disconnected') setStatus('Connexion vidéo interrompue…');
-        if (state === 'failed') {
-          setStatus('Connexion WebRTC échouée');
-          showToast('WebRTC n’arrive pas à relier les deux téléphones. Un serveur TURN est probablement nécessaire sur ce réseau.');
-          try { peerConnection.restartIce(); } catch (_) {}
-          clearTimeout(renegotiationTimer);
-          if (isInitiator) renegotiationTimer = setTimeout(() => startOffer(true).catch(console.error), 1000);
-        }
-      };
-
-      peerConnection.oniceconnectionstatechange = () => {
-        const state = peerConnection.iceConnectionState;
-        console.log('ICE state:', state);
-        if (state === 'checking') setStatus('Recherche de connexion entre les téléphones…');
-        if (state === 'connected' || state === 'completed') setStatus('Vous êtes connectés ❤️', true);
-        if (state === 'failed') showToast('ICE a échoué. Sans TURN, certains réseaux mobiles/routeurs peuvent bloquer la connexion.');
-      };
-
-      return peerConnection;
-    }
-
-    async function startOffer(iceRestart = false) {
-      const pc = createPeerConnection();
-      const offer = await pc.createOffer(iceRestart ? { iceRestart: true } : undefined);
-      await pc.setLocalDescription(offer);
-      socket.emit('signal', { room: roomId, data: { type: 'offer', sdp: pc.localDescription } });
-    }
-
-    async function flushPendingIceCandidates(pc) {
-      if (!pc.remoteDescription) return;
-      const queue = pendingIceCandidates.splice(0);
-      for (const candidate of queue) {
-        try {
-          await pc.addIceCandidate(candidate);
-        } catch (error) {
-          console.warn('ICE candidate ignoré:', error);
-        }
-      }
-    }
-
-    async function handleSignal(data) {
-      const pc = createPeerConnection();
-      try {
-        if (data.type === 'offer') {
-          await pc.setRemoteDescription(data.sdp);
-          await flushPendingIceCandidates(pc);
-          const answer = await pc.createAnswer();
-          await pc.setLocalDescription(answer);
-          socket.emit('signal', { room: roomId, data: { type: 'answer', sdp: pc.localDescription } });
-        } else if (data.type === 'answer') {
-          await pc.setRemoteDescription(data.sdp);
-          await flushPendingIceCandidates(pc);
-        } else if (data.type === 'candidate' && data.candidate) {
-          if (pc.remoteDescription) {
-            await pc.addIceCandidate(data.candidate);
-          } else {
-            // Mobile browsers can deliver ICE before the offer/answer arrives.
-            pendingIceCandidates.push(data.candidate);
-          }
-        }
-      } catch (error) {
-        console.error('WebRTC signaling error:', error);
-        showToast('Erreur de connexion vidéo. Réessaie de rejoindre le salon.');
-      }
-    }
-
-    function resetPeer() {
-      pendingIceCandidates = [];
-      if (peerConnection) {
-        peerConnection.ontrack = null;
-        peerConnection.onicecandidate = null;
-        peerConnection.close();
-        peerConnection = null;
-      }
-      remoteVideo.srcObject = null;
-      remoteStream = null;
-      remoteVideo.muted = false;
-      enableRemoteAudioBtn.classList.remove('show');
-      remoteEmpty.style.display = 'grid';
-    }
-
-    function stopMedia() {
-      localStream?.getTracks().forEach(track => track.stop());
-      localStream = null;
-      localVideo.srcObject = null;
-      localEmpty.style.display = 'grid';
-    }
-
-    async function joinRoom() {
-      const room = roomInput.value.trim().toUpperCase();
-      if (!room) return showToast('Entre un code de salon.');
-      if (joined) return showToast('Tu es déjà dans un salon.');
-
-      if (!navigator.mediaDevices?.getUserMedia) return showToast('La caméra nécessite HTTPS ou localhost.');
-
-      const mediaOk = await prepareMedia();
-      if (!mediaOk) return;
-
-      setStatus('Connexion au salon…');
-
-      socket.emit('join-room', room, (response) => {
-        if (!response?.ok) {
-          setStatus('Hors appel');
-          showToast(response?.error || 'Impossible de rejoindre le salon.');
-          return;
-        }
-
-        roomId = response.room;
-        isInitiator = response.initiator;
-        setRoomCount(response.count || 1);
-        joined = true;
-        roomInput.value = roomId;
-        setRoomInUrl(roomId);
-        copyBtn.disabled = false;
-        loadVideoBtn.disabled = false;
-        joinBtn.disabled = true;
-        createBtn.disabled = true;
-        hangupBtn.disabled = false;
-        setStatus(response.count === 2 ? '2/2 — Connexion vidéo…' : 'En attente de ta copine…');
-        socket.emit('request-video-state');
-        setTimeout(() => { if (joined) socket.emit('request-video-state'); }, 1200);
-        showToast('Salon prêt. Partage le lien avec elle ❤️');
-      });
-    }
-
-    function leaveRoom() {
-      if (joined) socket.emit('leave-room');
-      joined = false;
-      isInitiator = false;
-      resetPeer();
-      stopMedia();
-      roomId = '';
-      copyBtn.disabled = true;
-      joinBtn.disabled = false;
-      createBtn.disabled = false;
-      hangupBtn.disabled = true;
-      micBtn.disabled = true;
-      camBtn.disabled = true;
-      loadVideoBtn.disabled = true;
-      cleanupSharedVideo();
-      clearVideoBtn.disabled = true;
-      setRoomCount(0);
-      setStatus('Hors appel');
-    }
-
-    enableRemoteAudioBtn.addEventListener('click', async () => {
-      try {
-        remoteVideo.muted = false;
-        remoteVideo.volume = 1;
-        await remoteVideo.play();
-        enableRemoteAudioBtn.classList.remove('show');
-        showToast('🔊 Son activé.');
-      } catch (error) {
-        console.error('Remote audio activation failed:', error);
-        showToast('Impossible d’activer le son. Vérifie le volume et le mode silencieux du téléphone.');
-      }
-    });
-
-    testMediaBtn.addEventListener('click', () => prepareMedia({ fromTestButton: true }));
-
-    fullscreenBtn.addEventListener('click', async () => {
-      try {
-        if (!document.fullscreenElement && watchLayout.requestFullscreen) {
-          await watchLayout.requestFullscreen();
-        } else if (document.webkitFullscreenElement && watchLayout.webkitExitFullscreen) {
-          await watchLayout.webkitExitFullscreen();
-        } else if (document.exitFullscreen) {
-          await document.exitFullscreen();
-        }
-      } catch (error) {
-        console.error('fullscreen error:', error);
-        showToast('Impossible d’ouvrir le plein écran dans ce navigateur.');
-      }
-    });
-
-    exitFullscreenBtn.addEventListener('click', async () => {
-      try {
-        if (document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen();
-        else if (document.webkitFullscreenElement && document.webkitExitFullscreen) await document.webkitExitFullscreen();
-      } catch (_) {}
-    });
-
-    function updateFullscreenButton() {
-      const active = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
-      fullscreenBtn.textContent = active ? '⤢ Quitter' : '⛶ Plein écran';
-    }
-
-    document.addEventListener('fullscreenchange', updateFullscreenButton);
-    document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
-
-    createBtn.addEventListener('click', () => {
-      if (joined) return;
-      roomInput.value = makeRoomCode();
-      copyBtn.disabled = false;
-      setRoomInUrl(roomInput.value);
-      showToast('Salon créé. Clique sur « Rejoindre » puis partage le lien.');
-    });
-
-    joinBtn.addEventListener('click', joinRoom);
-    hangupBtn.addEventListener('click', leaveRoom);
-
-    copyBtn.addEventListener('click', async () => {
-      const room = roomInput.value.trim().toUpperCase();
-      if (!room) return;
-      const url = new URL(window.location.href);
-      url.searchParams.set('room', room);
-      try {
-        await navigator.clipboard.writeText(url.toString());
-        showToast('Lien du salon copié ❤️');
-      } catch {
-        showToast('Copie impossible. Copie l’adresse de la page manuellement.');
-      }
-    });
-
-    micBtn.addEventListener('click', () => {
-      const track = localStream?.getAudioTracks()[0];
-      if (!track) return;
-      track.enabled = !track.enabled;
-      micBtn.classList.toggle('active-off', !track.enabled);
-      micBtn.textContent = track.enabled ? '🎙️' : '🔇';
-    });
-
-    camBtn.addEventListener('click', () => {
-      const track = localStream?.getVideoTracks()[0];
-      if (!track) return;
-      track.enabled = !track.enabled;
-      camBtn.classList.toggle('active-off', !track.enabled);
-      camBtn.textContent = track.enabled ? '📹' : '🚫';
-    });
-
-    loadVideoBtn.addEventListener('click', () => {
-      const url = videoUrlInput.value.trim();
-      if (!url) return showToast('Colle un lien vidéo.');
-      try { new URL(url); } catch { return showToast('Le lien vidéo n’est pas valide.'); }
-      const type = detectVideoType(url);
-      loadSharedVideo(url, type, 0, false);
-      sendVideoCommand('load', { url, mediaType: type, currentTime: 0, playing: false });
-      showToast('Vidéo chargée pour vous deux 🎬');
-    });
-
-    clearVideoBtn.addEventListener('click', () => {
-      cleanupSharedVideo();
-      if (joined) socket.emit('clear-shared-video', roomId);
-    });
-
-    playPauseBtn.addEventListener('click', () => {
-      const nextPlaying = !isSharedPlaying();
-      const t = getSharedTime();
-      suppressVideoBroadcastUntil = Date.now() + 1200;
-      if (sharedVideoType === 'direct' && sharedVideo) {
-        try { sharedVideo.currentTime = t; } catch (_) {}
-        if (nextPlaying) sharedVideo.play().catch(() => showToast('Impossible de démarrer cette vidéo.'));
-        else sharedVideo.pause();
-      } else if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) {
-        youtubePlayer.seekTo(t, true);
-        if (nextPlaying) youtubePlayer.playVideo();
-        else youtubePlayer.pauseVideo();
-      }
-      sendVideoCommand(nextPlaying ? 'play' : 'pause', { currentTime: t, playing: nextPlaying });
-    });
-
-    videoProgress.addEventListener('input', () => {
-      const value = Number(videoProgress.value);
-      if (sharedVideoType === 'direct' && sharedVideo) sharedVideo.currentTime = value;
-      if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) youtubePlayer.seekTo(value, true);
-      timeLabel.textContent = `${formatTime(value)} / ${timeLabel.textContent.split(' / ')[1] || '00:00'}`;
-    });
-
-    videoProgress.addEventListener('change', () => {
-      const value = Number(videoProgress.value);
-      sendVideoCommand('seek', { currentTime: value });
-    });
-
-    back10Btn.addEventListener('click', () => {
-      const value = Math.max(0, getSharedTime() - 10);
-      if (sharedVideoType === 'direct' && sharedVideo) sharedVideo.currentTime = value;
-      if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) youtubePlayer.seekTo(value, true);
-      sendVideoCommand('seek', { currentTime: value });
-    });
-
-    forward10Btn.addEventListener('click', () => {
-      const duration = sharedVideoType === 'direct' ? (sharedVideo?.duration || Infinity) : (youtubePlayer?.getDuration?.() || Infinity);
-      const value = Math.min(duration, getSharedTime() + 10);
-      if (sharedVideoType === 'direct' && sharedVideo) sharedVideo.currentTime = value;
-      if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) youtubePlayer.seekTo(value, true);
-      sendVideoCommand('seek', { currentTime: value });
-    });
-
-    socket.on('connect', () => {
-      if (!joined) setStatus('Prêt à appeler');
-    });
-
-    socket.on('room-count', ({ count }) => {
-      setRoomCount(count);
-      if (joined) {
-        if (count === 2) {
-          setStatus('2/2 — Connexion vidéo…');
-        } else if (count === 1) {
-          setStatus('En attente de ta copine…');
-        }
-      }
-    });
-
-    socket.on('room-ready', async ({ initiator }) => {
-      if (!joined) return;
-      isInitiator = initiator;
-      setRoomCount(2);
-      setStatus('Connexion vidéo…');
-      createPeerConnection();
-      // Ask the server again for the latest shared-video state. This covers
-      // cases where the second phone joined while the first was loading media.
-      socket.emit('request-video-state');
-      if (isInitiator) await startOffer();
-    });
-
-    socket.on('signal', handleSignal);
-
-    socket.on('shared-video-state', (state) => {
-      if (!joined || !state?.url) return;
-      loadSharedVideo(state.url, state.mediaType, state.currentTime || 0, Boolean(state.playing));
-    });
-
-    socket.on('video-command', (command) => {
-      if (!joined) return;
-      if (command.action === 'load' && command.url) {
-        loadSharedVideo(command.url, command.mediaType, command.currentTime || 0, Boolean(command.playing));
-        return;
-      }
+      suppressVideoBroadcastUntil =
+        Date.now() + 1500;
 
       applyingRemoteCommand = true;
-      suppressVideoBroadcastUntil = Date.now() + 1500;
-      try {
-        const t = Number(command.currentTime || 0);
-        if (command.action === 'play') {
-          if (sharedVideoType === 'direct' && sharedVideo) {
-            sharedVideo.currentTime = t;
-            sharedVideo.play().catch(() => showToast('Clique sur ▶ Lecture pour autoriser la lecture de la vidéo.'));
-          } else if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) {
-            youtubePlayer.seekTo(t, true);
-            youtubePlayer.playVideo();
-          }
-        } else if (command.action === 'pause') {
-          if (sharedVideoType === 'direct' && sharedVideo) {
-            sharedVideo.currentTime = t;
-            sharedVideo.pause();
-          } else if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) {
-            youtubePlayer.seekTo(t, true);
-            youtubePlayer.pauseVideo();
-          }
-        } else if (command.action === 'seek') {
-          if (sharedVideoType === 'direct' && sharedVideo) sharedVideo.currentTime = t;
-          else if (sharedVideoType === 'youtube' && youtubePlayer && youtubeReady) youtubePlayer.seekTo(t, true);
-        }
-      } finally {
-        setTimeout(() => { applyingRemoteCommand = false; updateVideoControls(); }, 100);
+
+      clearInterval(progressTimer);
+
+      progressTimer = null;
+
+      if (hlsInstance) {
+
+        try {
+          hlsInstance.destroy();
+        } catch (_) {}
+
+        hlsInstance = null;
+
       }
-    });
 
-    socket.on('clear-shared-video', () => {
-      cleanupSharedVideo();
-      showToast('La vidéo partagée a été retirée.');
-    });
+      if (sharedVideo) {
 
-    socket.on('peer-left', () => {
-      resetPeer();
-      setStatus('Ta copine a quitté le salon');
-      showToast('L’autre personne a quitté l’appel.');
-    });
+        try {
+          sharedVideo.pause();
+        } catch (_) {}
 
-    window.addEventListener('beforeunload', () => {
-      if (joined) socket.emit('leave-room');
-    });
+        try {
 
-    const initialRoom = new URLSearchParams(window.location.search).get('room');
-    if (initialRoom) {
-      roomInput.value = initialRoom.toUpperCase();
-      copyBtn.disabled = false;
-    } else {
-      roomInput.value = makeRoomCode();
+          sharedVideo.removeAttribute(
+            'src'
+          );
+
+          sharedVideo.load();
+
+        } catch (_) {}
+
+      }
+
+      sharedVideo = null;
+
+      youtubePlayer = null;
+      youtubeReady = false;
+
+      sharedVideoType = null;
+
+      pendingDirectState = null;
+
+      if (resetKey) {
+        lastAppliedVideoKey = '';
+      }
+
+      sharedMedia.innerHTML = '';
+
+      sharedMedia.appendChild(
+        watchEmpty
+      );
+
+      watchEmpty.style.display =
+        'grid';
+
+      videoUrlInput.value = '';
+
+      updateVideoControls();
+
+      setTimeout(
+        () => {
+          applyingRemoteCommand = false;
+        },
+        50
+      );
+
     }
 
-    secureContextHint.textContent = window.isSecureContext ? 'HTTPS détecté. Clique sur « Tester caméra + micro ».' : '⚠️ HTTPS nécessaire pour la caméra et le micro.';
-    setRoomCount(0);
+
+    function createYouTubePlayer(
+      videoId,
+      startAt = 0,
+      shouldPlay = false
+    ) {
+
+      youtubeReady = false;
+
+      sharedMedia.innerHTML = '';
+
+      const host =
+        document.createElement('div');
+
+      host.id =
+        'youtubePlayer';
+
+      host.style.width =
+        '100%';
+
+      host.style.height =
+        '100%';
+
+      sharedMedia.appendChild(host);
+
+
+      const startPlayer = () => {
+
+        youtubePlayer =
+          new YT.Player(
+            'youtubePlayer',
+            {
+
+              width: '100%',
+
+              height: '100%',
+
+              videoId,
+
+              playerVars: {
+
+                autoplay:
+                  shouldPlay
+                    ? 1
+                    : 0,
+
+                controls: 1,
+
+                fs: 0,
+
+                rel: 0,
+
+                playsinline: 1,
+
+                start:
+                  Math.floor(
+                    startAt
+                  )
+
+              },
+
+              events: {
+
+                onReady: () => {
+
+                  youtubeReady = true;
+
+                  updateVideoControls();
+
+                  startProgressTimer();
+
+                  if (
+                    startAt > 0
+                  ) {
+
+                    youtubePlayer.seekTo(
+                      startAt,
+                      true
+                    );
+
+                  }
+
+                  if (shouldPlay) {
+
+                    youtubePlayer.playVideo();
+
+                  }
+
+                },
+
+
+                onStateChange:
+                  (event) => {
+
+                    if (
+                      applyingRemoteCommand
+                    ) {
+
+                      return;
+
+                    }
+
+                    if (
+                      event.data ===
+                      YT.PlayerState.PLAYING
+                    ) {
+
+                      sendVideoCommand(
+                        'play',
+                        {
+                          currentTime:
+                            youtubePlayer.getCurrentTime(),
+
+                          playing: true
+                        }
+                      );
+
+                    }
+
+
+                    if (
+                      event.data ===
+                      YT.PlayerState.PAUSED
+                    ) {
+
+                      sendVideoCommand(
+                        'pause',
+                        {
+                          currentTime:
+                            youtubePlayer.getCurrentTime(),
+
+                          playing: false
+                        }
+                      );
+
+                    }
+
+                    updateVideoControls();
+
+                  }
+
+              }
+
+            }
+          );
+
+      };
+
+
+      if (
+        window.YT &&
+        window.YT.Player
+      ) {
+
+        startPlayer();
+
+      } else {
+
+        window.onYouTubeIframeAPIReady =
+          startPlayer;
+
+      }
+
+    }
+
+
+    function startProgressTimer() {
+
+      clearInterval(
+        progressTimer
+      );
+
+      progressTimer =
+        setInterval(
+          updateVideoControls,
+          400
+        );
+
+    }
+
+
+    function applyDirectVideoState(
+      video,
+      startAt = 0,
+      shouldPlay = false
+    ) {
+
+      if (
+        !video ||
+        video !== sharedVideo
+      ) {
+
+        return;
+
+      }
+
+
+      const apply = () => {
+
+        if (
+          !video ||
+          video !== sharedVideo
+        ) {
+
+          return;
+
+        }
+
+        const time =
+          Number(startAt) || 0;
+
+
+        if (
+          Number.isFinite(
+            video.duration
+          ) &&
+          video.duration > 0
+        ) {
+
+          try {
+
+            video.currentTime =
+              Math.min(
+                time,
+                video.duration
+              );
+
+          } catch (_) {}
+
+        } else if (time > 0) {
+
+          try {
+
+            video.currentTime =
+              time;
+
+          } catch (_) {}
+
+        }
+
+
+        updateVideoControls();
+
+
+        if (shouldPlay) {
+
+          video.play().catch(
+            () => {
+
+              showToast(
+                'La vidéo est chargée. Appuie sur ▶ Lecture si le navigateur bloque la lecture.'
+              );
+
+            }
+          );
+
+        }
+
+      };
+
+
+      if (
+        video.readyState >= 1
+      ) {
+
+        apply();
+
+      } else {
+
+        pendingDirectState = {
+
+          currentTime:
+            Number(startAt) || 0,
+
+          shouldPlay:
+            Boolean(shouldPlay)
+
+        };
+
+      }
+
+    }
+
+
+    function loadSharedVideo(
+      url,
+      type,
+      startAt = 0,
+      shouldPlay = false
+    ) {
+
+      const cleanUrl =
+        String(url || '').trim();
+
+      if (!cleanUrl) {
+        return;
+      }
+
+
+      const detectedType =
+        detectVideoType(
+          cleanUrl
+        );
+
+      const nextType =
+        detectedType ||
+        type ||
+        'direct';
+
+      const videoKey =
+        `${nextType}|${cleanUrl}`;
+
+
+      /*
+       * Même vidéo déjà chargée :
+       * on ne détruit PAS le lecteur.
+       */
+      if (
+        videoKey ===
+          lastAppliedVideoKey &&
+        sharedVideoType ===
+          nextType
+      ) {
+
+        suppressVideoBroadcastUntil =
+          Date.now() + 1200;
+
+
+        if (
+          sharedVideoType ===
+          'youtube' &&
+          youtubePlayer
+        ) {
+
+          if (youtubeReady) {
+
+            const current =
+              youtubePlayer.getCurrentTime() || 0;
+
+
+            if (
+              Math.abs(
+                current -
+                Number(startAt || 0)
+              ) > 1.5
+            ) {
+
+              applyingRemoteCommand = true;
+
+              youtubePlayer.seekTo(
+                Number(startAt || 0),
+                true
+              );
+
+              setTimeout(
+                () => {
+                  applyingRemoteCommand =
+                    false;
+                },
+                100
+              );
+
+            }
+
+
+            applyingRemoteCommand = true;
+
+
+            if (
+              shouldPlay &&
+              youtubePlayer.getPlayerState() !==
+                YT.PlayerState.PLAYING
+            ) {
+
+              youtubePlayer.playVideo();
+
+            }
+
+
+            if (
+              !shouldPlay &&
+              youtubePlayer.getPlayerState() ===
+                YT.PlayerState.PLAYING
+            ) {
+
+              youtubePlayer.pauseVideo();
+
+            }
+
+
+            setTimeout(
+              () => {
+                applyingRemoteCommand =
+                  false;
+              },
+              150
+            );
+
+          }
+
+          return;
+        }
+
+
+        if (
+          sharedVideoType ===
+            'direct' &&
+          sharedVideo
+        ) {
+
+          applyingRemoteCommand = true;
+
+          applyDirectVideoState(
+            sharedVideo,
+            Number(startAt || 0),
+            Boolean(shouldPlay)
+          );
+
+          setTimeout(
+            () => {
+
+              applyingRemoteCommand =
+                false;
+
+              updateVideoControls();
+
+            },
+            150
+          );
+
+          return;
+        }
+
+      }
+
+
+      /*
+       * Nouveau film.
+       */
+      cleanupSharedVideo({
+        resetKey: false
+      });
+
+
+      lastAppliedVideoKey =
+        videoKey;
+
+      sharedVideoType =
+        nextType;
+
+      videoUrlInput.value =
+        cleanUrl;
+
+      watchEmpty.style.display =
+        'none';
+
+      suppressVideoBroadcastUntil =
+        Date.now() + 1500;
+
+
+      if (
+        sharedVideoType ===
+        'youtube'
+      ) {
+
+        const videoId =
+          extractYouTubeId(
+            cleanUrl
+          );
+
+
+        if (!videoId) {
+
+          showToast(
+            'Lien YouTube invalide.'
+          );
+
+          cleanupSharedVideo();
+
+          return;
+
+        }
+
+
+        createYouTubePlayer(
+          videoId,
+          startAt,
+          shouldPlay
+        );
+
+        updateVideoControls();
+
+        return;
+      }
+
+
+      /*
+       * Lecteur vidéo direct :
+       * MP4 / WebM / OGG
+       *
+       * IMPORTANT :
+       * On ne force PAS crossOrigin="anonymous".
+       * Certains serveurs MP4 refusent cette lecture.
+       */
+      const video =
+        document.createElement(
+          'video'
+        );
+
+
+      video.controls = false;
+
+      video.playsInline = true;
+
+      video.preload = 'metadata';
+
+      video.setAttribute(
+        'playsinline',
+        ''
+      );
+
+      video.setAttribute(
+        'webkit-playsinline',
+        ''
+      );
+
+
+      sharedMedia.innerHTML = '';
+
+      sharedMedia.appendChild(
+        video
+      );
+
+      sharedVideo =
+        video;
+
+
+      pendingDirectState = {
+
+        currentTime:
+          Number(startAt) || 0,
+
+        shouldPlay:
+          Boolean(shouldPlay)
+
+      };
+
+
+      const applyPendingState =
+        () => {
+
+          if (
+            !pendingDirectState ||
+            video !== sharedVideo
+          ) {
+
+            return;
+
+          }
+
+          const state =
+            pendingDirectState;
+
+          pendingDirectState =
+            null;
+
+          applyingRemoteCommand =
+            true;
+
+
+          const time =
+            Number(
+              state.currentTime
+            ) || 0;
+
+
+          if (
+            Number.isFinite(
+              video.duration
+            ) &&
+            video.duration > 0
+          ) {
+
+            try {
+
+              video.currentTime =
+                Math.min(
+                  time,
+                  video.duration
+                );
+
+            } catch (_) {}
+
+          }
+
+
+          updateVideoControls();
+
+
+          if (
+            state.shouldPlay
+          ) {
+
+            video.play().catch(
+              () => {
+
+                showToast(
+                  'La vidéo est chargée. Appuie sur ▶ Lecture si Brave bloque la lecture automatique.'
+                );
+
+              }
+            );
+
+          }
+
+
+          setTimeout(
+            () => {
+
+              applyingRemoteCommand =
+                false;
+
+              updateVideoControls();
+
+            },
+            150
+          );
+
+        };
+
+
+      video.addEventListener(
+        'loadedmetadata',
+        applyPendingState
+      );
+
+
+      video.addEventListener(
+        'canplay',
+        applyPendingState,
+        { once: true }
+      );
+
+
+      video.addEventListener(
+        'durationchange',
+        updateVideoControls
+      );
+
+
+      video.addEventListener(
+        'timeupdate',
+        updateVideoControls
+      );
+
+
+      video.addEventListener(
+        'play',
+        () => {
+
+          if (
+            !applyingRemoteCommand &&
+            Date.now() >
+              suppressVideoBroadcastUntil
+          ) {
+
+            sendVideoCommand(
+              'play',
+              {
+
+                currentTime:
+                  video.currentTime,
+
+                playing: true
+
+              }
+            );
+
+          }
+
+          updateVideoControls();
+
+        }
+      );
+
+
+      video.addEventListener(
+        'pause',
+        () => {
+
+          if (
+            !applyingRemoteCommand &&
+            Date.now() >
+              suppressVideoBroadcastUntil
+          ) {
+
+            sendVideoCommand(
+              'pause',
+              {
+
+                currentTime:
+                  video.currentTime,
+
+                playing: false
+
+              }
+            );
+
+          }
+
+          updateVideoControls();
+
+        }
+      );
+
+
+      video.addEventListener(
+        'seeking',
+        () => {
+
+          if (
+            !applyingRemoteCommand &&
+            Date.now() >
+              suppressVideoBroadcastUntil
+          ) {
+
+            sendVideoCommand(
+              'seek',
+              {
+
+                currentTime:
+                  video.currentTime
+
+              }
+            );
+
+          }
+
+        }
+      );
+
+
+      video.addEventListener(
+        'seeked',
+        () => {
+
+          if (
+            !applyingRemoteCommand &&
+            Date.now() >
+              suppressVideoBroadcastUntil
+          ) {
+
+            sendVideoCommand(
+              'seek',
+              {
+
+                currentTime:
+                  video.currentTime
+
+              }
+            );
+
+          }
+
+          updateVideoControls();
+
+        }
+      );
+
+
+      video.addEventListener(
+        'error',
+        () => {
+
+          const code =
+            video.error?.code;
+
+          const details =
+            code
+              ? ` (code ${code})`
+              : '';
+
+          showToast(
+            `Impossible de lire la vidéo${details}. Vérifie que le lien MP4 est accessible directement.`
+          );
+
+          console.error(
+            'Video error:',
+            video.error
+          );
+
+        }
+      );
+
+
+      /*
+       * HLS
+       */
+      if (
+        sharedVideoType ===
+        'hls'
+      ) {
+
+        if (
+          window.Hls &&
+          Hls.isSupported()
+        ) {
+
+          hlsInstance =
+            new Hls({
+
+              enableWorker: true,
+
+              lowLatencyMode: false
+
+            });
+
+
+          hlsInstance.on(
+            Hls.Events.MEDIA_ATTACHED,
+            () => {
+
+              hlsInstance.loadSource(
+                cleanUrl
+              );
+
+            }
+          );
+
+
+          hlsInstance.on(
+            Hls.Events.MANIFEST_PARSED,
+            () => {
+
+              applyPendingState();
+
+            }
+          );
+
+
+          hlsInstance.on(
+            Hls.Events.ERROR,
+            (_event, data) => {
+
+              console.warn(
+                'HLS error:',
+                data
+              );
+
+
+              if (
+                data?.fatal
+              ) {
+
+                let message =
+                  'Erreur HLS.';
+
+
+                if (
+                  data.type ===
+                  Hls.ErrorTypes.NETWORK_ERROR
+                ) {
+
+                  message =
+                    'Le flux HLS ne répond pas ou son lien a expiré.';
+
+                } else if (
+                  data.type ===
+                  Hls.ErrorTypes.MEDIA_ERROR
+                ) {
+
+                  message =
+                    'Le navigateur n’arrive pas à décoder ce flux HLS.';
+
+                } else if (
+                  data.details ===
+                  'manifestLoadError'
+                ) {
+
+                  message =
+                    'Impossible de charger le fichier .m3u8. Le serveur peut bloquer CORS.';
+
+                }
+
+
+                showToast(
+                  message
+                );
+
+              }
+
+            }
+          );
+
+
+          hlsInstance.attachMedia(
+            video
+          );
+
+
+        } else if (
+          video.canPlayType(
+            'application/vnd.apple.mpegurl'
+          )
+        ) {
+
+          /*
+           * HLS natif Safari / certains mobiles.
+           */
+          video.src =
+            cleanUrl;
+
+
+        } else {
+
+          showToast(
+            'Ce navigateur ne prend pas en charge HLS (.m3u8).'
+          );
+
+          cleanupSharedVideo();
+
+          return;
+        }
+
+
+      } else {
+
+        /*
+         * MP4 / WebM / OGG
+         */
+        video.src =
+          cleanUrl;
+
+      }
+
+
+      startProgressTimer();
+
+      updateVideoControls();
+
+    }
+
+
+    function applyLocalStream(
+      stream
+    ) {
+
+      localStream =
+        stream;
+
+      localVideo.srcObject =
+        stream;
+
+      localVideo.muted =
+        true;
+
+      localVideo.playsInline =
+        true;
+
+      localVideo.autoplay =
+        true;
+
+      localVideo.play().catch(
+        () => {}
+      );
+
+      localEmpty.style.display =
+        'none';
+
+
+      micBtn.disabled =
+        stream.getAudioTracks().length === 0;
+
+      camBtn.disabled =
+        stream.getVideoTracks().length === 0;
+
+
+      setMediaStatus(
+        cameraStatus,
+        stream.getVideoTracks().length
+          ? 'ok'
+          : 'bad',
+        stream.getVideoTracks().length
+          ? 'Active'
+          : 'Introuvable'
+      );
+
+
+      setMediaStatus(
+        microphoneStatus,
+        stream.getAudioTracks().length
+          ? 'ok'
+          : 'bad',
+        stream.getAudioTracks().length
+          ? 'Actif'
+          : 'Introuvable'
+      );
+
+
+      secureContextHint.textContent =
+        'Caméra et micro prêts.';
+
+    }
+
+
+    async function requestMediaRobust() {
+
+      try {
+
+        return await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
+
+      } catch (firstError) {
+
+        const firstName =
+          firstError?.name ||
+          'UnknownError';
+
+        console.warn(
+          'Combined camera+micro request failed:',
+          firstError
+        );
+
+
+        let videoStream =
+          null;
+
+        let audioStream =
+          null;
+
+
+        try {
+
+          videoStream =
+            await navigator.mediaDevices.getUserMedia({
+              video: true
+            });
+
+        } catch (videoError) {
+
+          console.warn(
+            'Video-only request failed:',
+            videoError
+          );
+
+        }
+
+
+        try {
+
+          audioStream =
+            await navigator.mediaDevices.getUserMedia({
+              audio: true
+            });
+
+        } catch (audioError) {
+
+          console.warn(
+            'Audio-only request failed:',
+            audioError
+          );
+
+        }
+
+
+        if (
+          videoStream ||
+          audioStream
+        ) {
+
+          const tracks = [
+
+            ...(
+              videoStream
+                ? videoStream.getVideoTracks()
+                : []
+            ),
+
+            ...(
+              audioStream
+                ? audioStream.getAudioTracks()
+                : []
+            )
+
+          ];
+
+
+          videoStream?.getTracks()
+            .forEach(
+              t => {
+
+                if (
+                  !tracks.includes(t)
+                ) {
+
+                  t.stop();
+
+                }
+
+              }
+            );
+
+
+          audioStream?.getTracks()
+            .forEach(
+              t => {
+
+                if (
+                  !tracks.includes(t)
+                ) {
+
+                  t.stop();
+
+                }
+
+              }
+            );
+
+
+          if (
+            tracks.length
+          ) {
+
+            return new MediaStream(
+              tracks
+            );
+
+          }
+
+        }
+
+
+        firstError.__combinedFailure =
+          firstName;
+
+        throw firstError;
+
+      }
+
+    }
+
+
+    async function prepareMedia(
+      {
+        fromTestButton = false
+      } = {}
+    ) {
+
+      if (
+        localStream &&
+        localStream
+          .getTracks()
+          .some(
+            track =>
+              track.readyState ===
+              'live'
+          )
+      ) {
+
+        applyLocalStream(
+          localStream
+        );
+
+        return true;
+      }
+
+
+      if (localStream) {
+
+        localStream
+          .getTracks()
+          .forEach(
+            track => track.stop()
+          );
+
+        localStream = null;
+
+      }
+
+
+      mediaError.textContent =
+        '';
+
+
+      if (
+        !window.isSecureContext
+      ) {
+
+        mediaError.textContent =
+          'Cette page n’est pas sécurisée. Ouvre le lien Render en HTTPS, pas en HTTP.';
+
+
+        setMediaStatus(
+          cameraStatus,
+          'bad',
+          'HTTPS requis'
+        );
+
+
+        setMediaStatus(
+          microphoneStatus,
+          'bad',
+          'HTTPS requis'
+        );
+
+
+        showToast(
+          'La caméra et le micro nécessitent HTTPS.'
+        );
+
+
+        return false;
+
+      }
+
+
+      if (
+        !navigator.mediaDevices?.getUserMedia
+      ) {
+
+        mediaError.textContent =
+          'getUserMedia n’est pas disponible dans ce navigateur/contexte.';
+
+
+        setMediaStatus(
+          cameraStatus,
+          'bad',
+          'Indisponible'
+        );
+
+
+        setMediaStatus(
+          microphoneStatus,
+          'bad',
+          'Indisponible'
+        );
+
+
+        showToast(
+          'Caméra/micro indisponibles dans ce contexte.'
+        );
+
+
+        return false;
+
+      }
+
+
+      try {
+
+        setMediaStatus(
+          cameraStatus,
+          '',
+          'Ouverture…'
+        );
+
+
+        setMediaStatus(
+          microphoneStatus,
+          '',
+          'Ouverture…'
+        );
+
+
+        secureContextHint.textContent =
+          'Ouverture de la caméra et du micro…';
+
+
+        localStream =
+          await requestMediaRobust();
+
+
+        applyLocalStream(
+          localStream
+        );
+
+
+        await readPermissionState();
+
+
+        if (fromTestButton) {
+
+          showToast(
+            '✅ Caméra et micro fonctionnent.'
+          );
+
+        }
+
+
+        return true;
+
+      } catch (error) {
+
+        console.error(
+          'Camera/micro final error:',
+          error
+        );
+
+
+        localStream?.getTracks()
+          .forEach(
+            track => track.stop()
+          );
+
+
+        localStream = null;
+
+        localVideo.srcObject =
+          null;
+
+        localEmpty.style.display =
+          'grid';
+
+
+        micBtn.disabled =
+          true;
+
+        camBtn.disabled =
+          true;
+
+
+        const deviceInfo =
+          await (
+            async () => {
+
+              try {
+
+                const devices =
+                  await navigator
+                    .mediaDevices
+                    .enumerateDevices();
+
+
+                const cams =
+                  devices.filter(
+                    d =>
+                      d.kind ===
+                      'videoinput'
+                  ).length;
+
+
+                const mics =
+                  devices.filter(
+                    d =>
+                      d.kind ===
+                      'audioinput'
+                  ).length;
+
+
+                return (
+                  ` Périphériques détectés : ${cams} caméra(s), ${mics} micro(s).`
+                );
+
+              } catch (_) {
+
+                return '';
+
+              }
+
+            }
+          )();
+
+
+        const details =
+          errorText(error) +
+          deviceInfo;
+
+
+        mediaError.textContent =
+          details;
+
+
+        if (
+          error?.name ===
+          'NotFoundError'
+        ) {
+
+          setMediaStatus(
+            cameraStatus,
+            'bad',
+            'Introuvable'
+          );
+
+          setMediaStatus(
+            microphoneStatus,
+            'bad',
+            'Introuvable'
+          );
+
+
+        } else if (
+          error?.name ===
+            'NotAllowedError' ||
+          error?.name ===
+            'SecurityError'
+        ) {
+
+          setMediaStatus(
+            cameraStatus,
+            'bad',
+            'Bloqué'
+          );
+
+          setMediaStatus(
+            microphoneStatus,
+            'bad',
+            'Bloqué'
+          );
+
+
+        } else if (
+          error?.name ===
+            'NotReadableError' ||
+          error?.name ===
+            'AbortError'
+        ) {
+
+          setMediaStatus(
+            cameraStatus,
+            'bad',
+            'Périphérique occupé'
+          );
+
+
+          setMediaStatus(
+            microphoneStatus,
+            'bad',
+            'Périphérique occupé'
+          );
+
+
+          secureContextHint.textContent =
+            'Ferme les applications qui utilisent la caméra/micro, puis réessaie.';
+
+
+        } else {
+
+          setMediaStatus(
+            cameraStatus,
+            'bad',
+            'Erreur'
+          );
+
+
+          setMediaStatus(
+            microphoneStatus,
+            'bad',
+            'Erreur'
+          );
+
+        }
+
+
+        await readPermissionState();
+
+
+        if (
+          error?.name ===
+            'AbortError' ||
+          error?.name ===
+            'NotReadableError'
+        ) {
+
+          showToast(
+            'Le périphérique est probablement occupé. Ferme Teams, Zoom, Discord, OBS ou l’application Caméra, puis réessaie.'
+          );
+
+        } else {
+
+          showToast(
+            fromTestButton
+              ? details
+              : 'Caméra/micro non disponibles : utilise d’abord « Tester caméra + micro ».'
+          );
+
+        }
+
+
+        return false;
+
+      }
+
+    }
+
+
+    function createPeerConnection() {
+
+      if (peerConnection) {
+        return peerConnection;
+      }
+
+
+      peerConnection =
+        new RTCPeerConnection(
+          rtcConfig
+        );
+
+
+      localStream?.getTracks()
+        .forEach(
+          track => {
+
+            peerConnection.addTrack(
+              track,
+              localStream
+            );
+
+          }
+        );
+
+
+      peerConnection.ontrack =
+        async (event) => {
+
+          if (
+            event.streams &&
+            event.streams[0]
+          ) {
+
+            remoteStream =
+              event.streams[0];
+
+          } else {
+
+            remoteStream =
+              remoteStream ||
+              new MediaStream();
+
+
+            if (
+              !remoteStream
+                .getTracks()
+                .includes(
+                  event.track
+                )
+            ) {
+
+              remoteStream.addTrack(
+                event.track
+              );
+
+            }
+
+          }
+
+
+          remoteVideo.srcObject =
+            remoteStream;
+
+          remoteVideo.muted =
+            false;
+
+          remoteVideo.volume =
+            1;
+
+          remoteEmpty.style.display =
+            'none';
+
+
+          enableRemoteAudioBtn
+            .classList
+            .add('show');
+
+
+          try {
+
+            await remoteVideo.play();
+
+            enableRemoteAudioBtn
+              .classList
+              .remove('show');
+
+
+          } catch (error) {
+
+            console.warn(
+              'Remote media autoplay blocked:',
+              error
+            );
+
+
+            showToast(
+              'La caméra est connectée. Appuie sur 🔊 Activer le son pour démarrer l’audio.'
+            );
+
+          }
+
+        };
+
+
+      peerConnection.onicecandidate =
+        (event) => {
+
+          if (
+            event.candidate
+          ) {
+
+            socket.emit(
+              'signal',
+              {
+
+                room: roomId,
+
+                data: {
+
+                  type:
+                    'candidate',
+
+                  candidate:
+                    event.candidate
+
+                }
+
+              }
+            );
+
+          }
+
+        };
+
+
+      peerConnection.onconnectionstatechange =
+        () => {
+
+          const state =
+            peerConnection.connectionState;
+
+
+          console.log(
+            'WebRTC connectionState:',
+            state
+          );
+
+
+          if (
+            state ===
+            'connected'
+          ) {
+
+            setStatus(
+              'Vous êtes connectés ❤️',
+              true
+            );
+
+
+            showToast(
+              'Caméra et micro de ta copine connectés ❤️'
+            );
+
+          }
+
+
+          if (
+            state ===
+            'connecting'
+          ) {
+
+            setStatus(
+              'Connexion vidéo…'
+            );
+
+          }
+
+
+          if (
+            state ===
+            'disconnected'
+          ) {
+
+            setStatus(
+              'Connexion vidéo interrompue…'
+            );
+
+          }
+
+
+          if (
+            state ===
+            'failed'
+          ) {
+
+            setStatus(
+              'Connexion WebRTC échouée'
+            );
+
+
+            showToast(
+              'WebRTC n’arrive pas à relier les deux téléphones. Un serveur TURN est probablement nécessaire sur ce réseau.'
+            );
+
+
+            try {
+
+              peerConnection
+                .restartIce();
+
+            } catch (_) {}
+
+
+            clearTimeout(
+              renegotiationTimer
+            );
+
+
+            if (isInitiator) {
+
+              renegotiationTimer =
+                setTimeout(
+                  () =>
+                    startOffer(
+                      true
+                    ).catch(
+                      console.error
+                    ),
+                  1000
+                );
+
+            }
+
+          }
+
+        };
+
+
+      peerConnection.oniceconnectionstatechange =
+        () => {
+
+          const state =
+            peerConnection.iceConnectionState;
+
+
+          console.log(
+            'ICE state:',
+            state
+          );
+
+
+          if (
+            state ===
+            'checking'
+          ) {
+
+            setStatus(
+              'Recherche de connexion entre les téléphones…'
+            );
+
+          }
+
+
+          if (
+            state === 'connected' ||
+            state === 'completed'
+          ) {
+
+            setStatus(
+              'Vous êtes connectés ❤️',
+              true
+            );
+
+          }
+
+
+          if (
+            state === 'failed'
+          ) {
+
+            showToast(
+              'ICE a échoué. Sans TURN, certains réseaux mobiles/routeurs peuvent bloquer la connexion.'
+            );
+
+          }
+
+        };
+
+
+      return peerConnection;
+
+    }
+
+
+    async function startOffer(
+      iceRestart = false
+    ) {
+
+      const pc =
+        createPeerConnection();
+
+
+      const offer =
+        await pc.createOffer(
+          iceRestart
+            ? {
+                iceRestart: true
+              }
+            : undefined
+        );
+
+
+      await pc.setLocalDescription(
+        offer
+      );
+
+
+      socket.emit(
+        'signal',
+        {
+
+          room: roomId,
+
+          data: {
+
+            type:
+              'offer',
+
+            sdp:
+              pc.localDescription
+
+          }
+
+        }
+      );
+
+    }
+
+
+    async function flushPendingIceCandidates(
+      pc
+    ) {
+
+      if (!pc.remoteDescription) {
+        return;
+      }
+
+
+      const queue =
+        pendingIceCandidates.splice(
+          0
+        );
+
+
+      for (
+        const candidate of queue
+      ) {
+
+        try {
+
+          await pc.addIceCandidate(
+            candidate
+          );
+
+        } catch (error) {
+
+          console.warn(
+            'ICE candidate ignoré:',
+            error
+          );
+
+        }
+
+      }
+
+    }
+
+
+    async function handleSignal(
+      data
+    ) {
+
+      const pc =
+        createPeerConnection();
+
+
+      try {
+
+        if (
+          data.type ===
+          'offer'
+        ) {
+
+          await pc.setRemoteDescription(
+            data.sdp
+          );
+
+
+          await flushPendingIceCandidates(
+            pc
+          );
+
+
+          const answer =
+            await pc.createAnswer();
+
+
+          await pc.setLocalDescription(
+            answer
+          );
+
+
+          socket.emit(
+            'signal',
+            {
+
+              room: roomId,
+
+              data: {
+
+                type:
+                  'answer',
+
+                sdp:
+                  pc.localDescription
+
+              }
+
+            }
+          );
+
+
+        } else if (
+          data.type ===
+          'answer'
+        ) {
+
+          await pc.setRemoteDescription(
+            data.sdp
+          );
+
+
+          await flushPendingIceCandidates(
+            pc
+          );
+
+
+        } else if (
+          data.type ===
+            'candidate' &&
+          data.candidate
+        ) {
+
+          if (
+            pc.remoteDescription
+          ) {
+
+            await pc.addIceCandidate(
+              data.candidate
+            );
+
+          } else {
+
+            pendingIceCandidates.push(
+              data.candidate
+            );
+
+          }
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          'WebRTC signaling error:',
+          error
+        );
+
+
+        showToast(
+          'Erreur de connexion vidéo. Réessaie de rejoindre le salon.'
+        );
+
+      }
+
+    }
+
+
+    function resetPeer() {
+
+      pendingIceCandidates =
+        [];
+
+
+      if (peerConnection) {
+
+        peerConnection.ontrack =
+          null;
+
+        peerConnection.onicecandidate =
+          null;
+
+        peerConnection.close();
+
+        peerConnection =
+          null;
+
+      }
+
+
+      remoteVideo.srcObject =
+        null;
+
+      remoteStream =
+        null;
+
+      remoteVideo.muted =
+        false;
+
+      enableRemoteAudioBtn
+        .classList
+        .remove('show');
+
+      remoteEmpty.style.display =
+        'grid';
+
+    }
+
+
+    function stopMedia() {
+
+      localStream?.getTracks()
+        .forEach(
+          track =>
+            track.stop()
+        );
+
+
+      localStream =
+        null;
+
+      localVideo.srcObject =
+        null;
+
+      localEmpty.style.display =
+        'grid';
+
+    }
+
+
+    async function joinRoom() {
+
+      const room =
+        roomInput.value
+          .trim()
+          .toUpperCase();
+
+
+      if (!room) {
+
+        return showToast(
+          'Entre un code de salon.'
+        );
+
+      }
+
+
+      if (joined) {
+
+        return showToast(
+          'Tu es déjà dans un salon.'
+        );
+
+      }
+
+
+      if (
+        !navigator
+          .mediaDevices
+          ?.getUserMedia
+      ) {
+
+        return showToast(
+          'La caméra nécessite HTTPS ou localhost.'
+        );
+
+      }
+
+
+      const mediaOk =
+        await prepareMedia();
+
+
+      if (!mediaOk) {
+        return;
+      }
+
+
+      setStatus(
+        'Connexion au salon…'
+      );
+
+
+      socket.emit(
+        'join-room',
+        room,
+        (response) => {
+
+          if (
+            !response?.ok
+          ) {
+
+            setStatus(
+              'Hors appel'
+            );
+
+
+            showToast(
+              response?.error ||
+              'Impossible de rejoindre le salon.'
+            );
+
+
+            return;
+          }
+
+
+          roomId =
+            response.room;
+
+
+          isInitiator =
+            response.initiator;
+
+
+          setRoomCount(
+            response.count || 1
+          );
+
+
+          joined =
+            true;
+
+
+          roomInput.value =
+            roomId;
+
+
+          setRoomInUrl(
+            roomId
+          );
+
+
+          copyBtn.disabled =
+            false;
+
+
+          loadVideoBtn.disabled =
+            false;
+
+
+          joinBtn.disabled =
+            true;
+
+
+          createBtn.disabled =
+            true;
+
+
+          hangupBtn.disabled =
+            false;
+
+
+          setStatus(
+            response.count === 2
+              ? '2/2 — Connexion vidéo…'
+              : 'En attente de ta copine…'
+          );
+
+
+          /*
+           * Un seul appel.
+           * L'ancien double appel pouvait provoquer
+           * un rechargement inutile de la vidéo.
+           */
+          socket.emit(
+            'request-video-state'
+          );
+
+
+          showToast(
+            'Salon prêt. Partage le lien avec elle ❤️'
+          );
+
+        }
+      );
+
+    }
+
+
+    function leaveRoom() {
+
+      if (joined) {
+
+        socket.emit(
+          'leave-room'
+        );
+
+      }
+
+
+      joined =
+        false;
+
+      isInitiator =
+        false;
+
+
+      resetPeer();
+
+      stopMedia();
+
+
+      roomId =
+        '';
+
+
+      copyBtn.disabled =
+        true;
+
+      joinBtn.disabled =
+        false;
+
+      createBtn.disabled =
+        false;
+
+      hangupBtn.disabled =
+        true;
+
+      micBtn.disabled =
+        true;
+
+      camBtn.disabled =
+        true;
+
+      loadVideoBtn.disabled =
+        true;
+
+
+      cleanupSharedVideo();
+
+
+      clearVideoBtn.disabled =
+        true;
+
+
+      setRoomCount(
+        0
+      );
+
+
+      setStatus(
+        'Hors appel'
+      );
+
+    }
+
+
+    enableRemoteAudioBtn.addEventListener(
+      'click',
+      async () => {
+
+        try {
+
+          remoteVideo.muted =
+            false;
+
+          remoteVideo.volume =
+            1;
+
+
+          await remoteVideo.play();
+
+
+          enableRemoteAudioBtn
+            .classList
+            .remove('show');
+
+
+          showToast(
+            '🔊 Son activé.'
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            'Remote audio activation failed:',
+            error
+          );
+
+
+          showToast(
+            'Impossible d’activer le son. Vérifie le volume et le mode silencieux du téléphone.'
+          );
+
+        }
+
+      }
+    );
+
+
+    testMediaBtn.addEventListener(
+      'click',
+      () =>
+        prepareMedia({
+          fromTestButton: true
+        })
+    );
+
+
+    fullscreenBtn.addEventListener(
+      'click',
+      async () => {
+
+        try {
+
+          if (
+            !document.fullscreenElement &&
+            watchLayout.requestFullscreen
+          ) {
+
+            await watchLayout.requestFullscreen();
+
+
+          } else if (
+            document.webkitFullscreenElement &&
+            watchLayout.webkitExitFullscreen
+          ) {
+
+            await watchLayout.webkitExitFullscreen();
+
+
+          } else if (
+            document.exitFullscreen
+          ) {
+
+            await document.exitFullscreen();
+
+          }
+
+        } catch (error) {
+
+          console.error(
+            'fullscreen error:',
+            error
+          );
+
+
+          showToast(
+            'Impossible d’ouvrir le plein écran dans ce navigateur.'
+          );
+
+        }
+
+      }
+    );
+
+
+    exitFullscreenBtn.addEventListener(
+      'click',
+      async () => {
+
+        try {
+
+          if (
+            document.fullscreenElement &&
+            document.exitFullscreen
+          ) {
+
+            await document.exitFullscreen();
+
+
+          } else if (
+            document.webkitFullscreenElement &&
+            document.webkitExitFullscreen
+          ) {
+
+            await document.webkitExitFullscreen();
+
+          }
+
+        } catch (_) {}
+
+      }
+    );
+
+
+    function updateFullscreenButton() {
+
+      const active =
+        Boolean(
+          document.fullscreenElement ||
+          document.webkitFullscreenElement
+        );
+
+
+      fullscreenBtn.textContent =
+        active
+          ? '⤢ Quitter'
+          : '⛶ Plein écran';
+
+    }
+
+
+    document.addEventListener(
+      'fullscreenchange',
+      updateFullscreenButton
+    );
+
+
+    document.addEventListener(
+      'webkitfullscreenchange',
+      updateFullscreenButton
+    );
+
+
+    createBtn.addEventListener(
+      'click',
+      () => {
+
+        if (joined) {
+          return;
+        }
+
+
+        roomInput.value =
+          makeRoomCode();
+
+
+        copyBtn.disabled =
+          false;
+
+
+        setRoomInUrl(
+          roomInput.value
+        );
+
+
+        showToast(
+          'Salon créé. Clique sur « Rejoindre » puis partage le lien.'
+        );
+
+      }
+    );
+
+
+    joinBtn.addEventListener(
+      'click',
+      joinRoom
+    );
+
+
+    hangupBtn.addEventListener(
+      'click',
+      leaveRoom
+    );
+
+
+    copyBtn.addEventListener(
+      'click',
+      async () => {
+
+        const room =
+          roomInput.value
+            .trim()
+            .toUpperCase();
+
+
+        if (!room) {
+          return;
+        }
+
+
+        const url =
+          new URL(
+            window.location.href
+          );
+
+
+        url.searchParams.set(
+          'room',
+          room
+        );
+
+
+        try {
+
+          await navigator.clipboard.writeText(
+            url.toString()
+          );
+
+
+          showToast(
+            'Lien du salon copié ❤️'
+          );
+
+
+        } catch {
+
+          showToast(
+            'Copie impossible. Copie l’adresse de la page manuellement.'
+          );
+
+        }
+
+      }
+    );
+
+
+    micBtn.addEventListener(
+      'click',
+      () => {
+
+        const track =
+          localStream
+            ?.getAudioTracks()[0];
+
+
+        if (!track) {
+          return;
+        }
+
+
+        track.enabled =
+          !track.enabled;
+
+
+        micBtn.classList.toggle(
+          'active-off',
+          !track.enabled
+        );
+
+
+        micBtn.textContent =
+          track.enabled
+            ? '🎙️'
+            : '🔇';
+
+      }
+    );
+
+
+    camBtn.addEventListener(
+      'click',
+      () => {
+
+        const track =
+          localStream
+            ?.getVideoTracks()[0];
+
+
+        if (!track) {
+          return;
+        }
+
+
+        track.enabled =
+          !track.enabled;
+
+
+        camBtn.classList.toggle(
+          'active-off',
+          !track.enabled
+        );
+
+
+        camBtn.textContent =
+          track.enabled
+            ? '📹'
+            : '🚫';
+
+      }
+    );
+
+
+    loadVideoBtn.addEventListener(
+      'click',
+      () => {
+
+        const url =
+          videoUrlInput.value.trim();
+
+
+        if (!url) {
+
+          return showToast(
+            'Colle un lien vidéo.'
+          );
+
+        }
+
+
+        try {
+
+          new URL(url);
+
+        } catch {
+
+          return showToast(
+            'Le lien vidéo n’est pas valide.'
+          );
+
+        }
+
+
+        const type =
+          detectVideoType(url);
+
+
+        loadSharedVideo(
+          url,
+          type,
+          0,
+          false
+        );
+
+
+        sendVideoCommand(
+          'load',
+          {
+
+            url,
+
+            mediaType:
+              type,
+
+            currentTime:
+              0,
+
+            playing:
+              false
+
+          }
+        );
+
+
+        showToast(
+          'Vidéo chargée pour vous deux 🎬'
+        );
+
+      }
+    );
+
+
+    clearVideoBtn.addEventListener(
+      'click',
+      () => {
+
+        cleanupSharedVideo({
+          resetKey: true
+        });
+
+
+        if (joined) {
+
+          socket.emit(
+            'clear-shared-video',
+            roomId
+          );
+
+        }
+
+      }
+    );
+
+
+    playPauseBtn.addEventListener(
+      'click',
+      () => {
+
+        const nextPlaying =
+          !isSharedPlaying();
+
+
+        const t =
+          getSharedTime();
+
+
+        suppressVideoBroadcastUntil =
+          Date.now() + 1200;
+
+
+        applyingRemoteCommand =
+          true;
+
+
+        if (
+          sharedVideoType ===
+            'direct' &&
+          sharedVideo
+        ) {
+
+          try {
+
+            sharedVideo.currentTime =
+              t;
+
+          } catch (_) {}
+
+
+          if (nextPlaying) {
+
+            sharedVideo
+              .play()
+              .catch(
+                () =>
+                  showToast(
+                    'Impossible de démarrer cette vidéo.'
+                  )
+              );
+
+          } else {
+
+            sharedVideo.pause();
+
+          }
+
+
+        } else if (
+          sharedVideoType ===
+            'youtube' &&
+          youtubePlayer &&
+          youtubeReady
+        ) {
+
+          youtubePlayer.seekTo(
+            t,
+            true
+          );
+
+
+          if (nextPlaying) {
+
+            youtubePlayer.playVideo();
+
+          } else {
+
+            youtubePlayer.pauseVideo();
+
+          }
+
+        }
+
+
+        setTimeout(
+          () => {
+
+            applyingRemoteCommand =
+              false;
+
+            updateVideoControls();
+
+          },
+          200
+        );
+
+
+        sendVideoCommand(
+          nextPlaying
+            ? 'play'
+            : 'pause',
+          {
+
+            currentTime:
+              t,
+
+            playing:
+              nextPlaying
+
+          }
+        );
+
+      }
+    );
+
+
+    videoProgress.addEventListener(
+      'input',
+      () => {
+
+        const value =
+          Number(
+            videoProgress.value
+          );
+
+
+        applyingRemoteCommand =
+          true;
+
+
+        if (
+          sharedVideoType ===
+            'direct' &&
+          sharedVideo
+        ) {
+
+          sharedVideo.currentTime =
+            value;
+
+
+        } else if (
+          sharedVideoType ===
+            'youtube' &&
+          youtubePlayer &&
+          youtubeReady
+        ) {
+
+          youtubePlayer.seekTo(
+            value,
+            true
+          );
+
+        }
+
+
+        timeLabel.textContent =
+          `${formatTime(value)} / ${
+            timeLabel.textContent.split(
+              ' / '
+            )[1] ||
+            '00:00'
+          }`;
+
+
+        setTimeout(
+          () => {
+            applyingRemoteCommand =
+              false;
+          },
+          100
+        );
+
+      }
+    );
+
+
+    videoProgress.addEventListener(
+      'change',
+      () => {
+
+        const value =
+          Number(
+            videoProgress.value
+          );
+
+
+        sendVideoCommand(
+          'seek',
+          {
+
+            currentTime:
+              value
+
+          }
+        );
+
+      }
+    );
+
+
+    back10Btn.addEventListener(
+      'click',
+      () => {
+
+        const value =
+          Math.max(
+            0,
+            getSharedTime() - 10
+          );
+
+
+        applyingRemoteCommand =
+          true;
+
+
+        if (
+          sharedVideoType ===
+            'direct' &&
+          sharedVideo
+        ) {
+
+          sharedVideo.currentTime =
+            value;
+
+
+        } else if (
+          sharedVideoType ===
+            'youtube' &&
+          youtubePlayer &&
+          youtubeReady
+        ) {
+
+          youtubePlayer.seekTo(
+            value,
+            true
+          );
+
+        }
+
+
+        setTimeout(
+          () => {
+            applyingRemoteCommand =
+              false;
+          },
+          100
+        );
+
+
+        sendVideoCommand(
+          'seek',
+          {
+
+            currentTime:
+              value
+
+          }
+        );
+
+      }
+    );
+
+
+    forward10Btn.addEventListener(
+      'click',
+      () => {
+
+        const duration =
+          sharedVideoType ===
+            'direct'
+            ? (
+                sharedVideo?.duration ||
+                Infinity
+              )
+            : (
+                youtubePlayer
+                  ?.getDuration?.() ||
+                Infinity
+              );
+
+
+        const value =
+          Math.min(
+            duration,
+            getSharedTime() + 10
+          );
+
+
+        applyingRemoteCommand =
+          true;
+
+
+        if (
+          sharedVideoType ===
+            'direct' &&
+          sharedVideo
+        ) {
+
+          sharedVideo.currentTime =
+            value;
+
+
+        } else if (
+          sharedVideoType ===
+            'youtube' &&
+          youtubePlayer &&
+          youtubeReady
+        ) {
+
+          youtubePlayer.seekTo(
+            value,
+            true
+          );
+
+        }
+
+
+        setTimeout(
+          () => {
+            applyingRemoteCommand =
+              false;
+          },
+          100
+        );
+
+
+        sendVideoCommand(
+          'seek',
+          {
+
+            currentTime:
+              value
+
+          }
+        );
+
+      }
+    );
+
+
+    socket.on(
+      'connect',
+      () => {
+
+        if (!joined) {
+
+          setStatus(
+            'Prêt à appeler'
+          );
+
+        }
+
+      }
+    );
+
+
+    socket.on(
+      'room-count',
+      ({ count }) => {
+
+        setRoomCount(
+          count
+        );
+
+
+        if (joined) {
+
+          if (
+            count === 2
+          ) {
+
+            setStatus(
+              '2/2 — Connexion vidéo…'
+            );
+
+
+          } else if (
+            count === 1
+          ) {
+
+            setStatus(
+              'En attente de ta copine…'
+            );
+
+          }
+
+        }
+
+      }
+    );
+
+
+    socket.on(
+      'room-ready',
+      async ({ initiator }) => {
+
+        if (!joined) {
+          return;
+        }
+
+
+        isInitiator =
+          initiator;
+
+
+        setRoomCount(
+          2
+        );
+
+
+        setStatus(
+          'Connexion vidéo…'
+        );
+
+
+        createPeerConnection();
+
+
+        /*
+         * On demande l'état vidéo une seule fois.
+         */
+        socket.emit(
+          'request-video-state'
+        );
+
+
+        if (isInitiator) {
+
+          await startOffer();
+
+        }
+
+      }
+    );
+
+
+    socket.on(
+      'signal',
+      handleSignal
+    );
+
+
+    socket.on(
+      'shared-video-state',
+      (state) => {
+
+        if (
+          !joined ||
+          !state?.url
+        ) {
+
+          return;
+
+        }
+
+
+        loadSharedVideo(
+          state.url,
+          state.mediaType,
+          state.currentTime || 0,
+          Boolean(
+            state.playing
+          )
+        );
+
+      }
+    );
+
+
+    socket.on(
+      'video-command',
+      (command) => {
+
+        if (!joined) {
+          return;
+        }
+
+
+        /*
+         * Chargement d'une nouvelle vidéo.
+         */
+        if (
+          command.action ===
+            'load' &&
+          command.url
+        ) {
+
+          loadSharedVideo(
+            command.url,
+            command.mediaType,
+            command.currentTime || 0,
+            Boolean(
+              command.playing
+            )
+          );
+
+          return;
+        }
+
+
+        applyingRemoteCommand =
+          true;
+
+
+        suppressVideoBroadcastUntil =
+          Date.now() + 1500;
+
+
+        try {
+
+          const t =
+            Number(
+              command.currentTime || 0
+            );
+
+
+          if (
+            command.action ===
+            'play'
+          ) {
+
+            if (
+              sharedVideoType ===
+                'direct' &&
+              sharedVideo
+            ) {
+
+              sharedVideo.currentTime =
+                t;
+
+
+              sharedVideo
+                .play()
+                .catch(
+                  () => {
+
+                    showToast(
+                      'Clique sur ▶ Lecture pour autoriser la lecture de la vidéo.'
+                    );
+
+                  }
+                );
+
+
+            } else if (
+              sharedVideoType ===
+                'youtube' &&
+              youtubePlayer &&
+              youtubeReady
+            ) {
+
+              youtubePlayer.seekTo(
+                t,
+                true
+              );
+
+
+              youtubePlayer.playVideo();
+
+            }
+
+
+          } else if (
+            command.action ===
+            'pause'
+          ) {
+
+            if (
+              sharedVideoType ===
+                'direct' &&
+              sharedVideo
+            ) {
+
+              sharedVideo.currentTime =
+                t;
+
+              sharedVideo.pause();
+
+
+            } else if (
+              sharedVideoType ===
+                'youtube' &&
+              youtubePlayer &&
+              youtubeReady
+            ) {
+
+              youtubePlayer.seekTo(
+                t,
+                true
+              );
+
+              youtubePlayer.pauseVideo();
+
+            }
+
+
+          } else if (
+            command.action ===
+            'seek'
+          ) {
+
+            if (
+              sharedVideoType ===
+                'direct' &&
+              sharedVideo
+            ) {
+
+              sharedVideo.currentTime =
+                t;
+
+
+            } else if (
+              sharedVideoType ===
+                'youtube' &&
+              youtubePlayer &&
+              youtubeReady
+            ) {
+
+              youtubePlayer.seekTo(
+                t,
+                true
+              );
+
+            }
+
+          }
+
+        } finally {
+
+          setTimeout(
+            () => {
+
+              applyingRemoteCommand =
+                false;
+
+              updateVideoControls();
+
+            },
+            100
+          );
+
+        }
+
+      }
+    );
+
+
+    socket.on(
+      'clear-shared-video',
+      () => {
+
+        cleanupSharedVideo();
+
+        showToast(
+          'La vidéo partagée a été retirée.'
+        );
+
+      }
+    );
+
+
+    socket.on(
+      'peer-left',
+      () => {
+
+        resetPeer();
+
+        setStatus(
+          'Ta copine a quitté le salon'
+        );
+
+
+        showToast(
+          'L’autre personne a quitté l’appel.'
+        );
+
+      }
+    );
+
+
+    window.addEventListener(
+      'beforeunload',
+      () => {
+
+        if (joined) {
+
+          socket.emit(
+            'leave-room'
+          );
+
+        }
+
+      }
+    );
+
+
+    const initialRoom =
+      new URLSearchParams(
+        window.location.search
+      ).get('room');
+
+
+    if (initialRoom) {
+
+      roomInput.value =
+        initialRoom.toUpperCase();
+
+      copyBtn.disabled =
+        false;
+
+    } else {
+
+      roomInput.value =
+        makeRoomCode();
+
+    }
+
+
+    secureContextHint.textContent =
+      window.isSecureContext
+        ? 'HTTPS détecté. Clique sur « Tester caméra + micro ».'
+        : '⚠️ HTTPS nécessaire pour la caméra et le micro.';
+
+
+    setRoomCount(
+      0
+    );
+
+
     readPermissionState();
 
-    const youtubeApi = document.createElement('script');
-    youtubeApi.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(youtubeApi);
+
+    /*
+     * API YouTube
+     */
+    const youtubeApi =
+      document.createElement(
+        'script'
+      );
+
+    youtubeApi.src =
+      'https://www.youtube.com/iframe_api';
+
+    document.head.appendChild(
+      youtubeApi
+    );
+
   </script>
+
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
 </body>
 </html>
