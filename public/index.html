@@ -96,12 +96,247 @@ video.addEventListener('loadedmetadata',applyPending);video.addEventListener('lo
 if(sharedVideoType==='hls'){if(window.Hls&&Hls.isSupported()){hlsInstance=new Hls({enableWorker:false,lowLatencyMode:false,backBufferLength:90,maxBufferLength:30,maxMaxBufferLength:60,startLevel:-1,manifestLoadingMaxRetry:4,manifestLoadingRetryDelay:1000,manifestLoadingMaxRetryTimeout:8000,levelLoadingMaxRetry:4,levelLoadingRetryDelay:1000,fragLoadingMaxRetry:5,fragLoadingRetryDelay:800,xhrSetup:x=>{x.withCredentials=false}});hlsInstance.on(Hls.Events.MEDIA_ATTACHED,()=>{try{hlsInstance.loadSource(clean)}catch(e){console.error(e);showToast('Impossible de charger le flux HLS.')}});hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>{updateVideoControls();applyPending();setTimeout(applyPendingVideoCommand,50)});hlsInstance.on(Hls.Events.LEVEL_LOADED,()=>{applyPending();setTimeout(applyPendingVideoCommand,50)});hlsInstance.on(Hls.Events.ERROR,(_e,data)=>{console.error('HLS error:',data);if(!data?.fatal)return;if(data.type===Hls.ErrorTypes.NETWORK_ERROR||data.details===Hls.ErrorDetails.MANIFEST_LOAD_ERROR||data.details===Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT||data.details===Hls.ErrorDetails.LEVEL_LOAD_ERROR||data.details===Hls.ErrorDetails.LEVEL_LOAD_TIMEOUT||data.details===Hls.ErrorDetails.FRAG_LOAD_ERROR||data.details===Hls.ErrorDetails.FRAG_LOAD_TIMEOUT){console.warn('HLS network retry:',data.details);setTimeout(()=>{try{hlsInstance.startLoad(-1)}catch{}},700)}else if(data.type===Hls.ErrorTypes.MEDIA_ERROR){showToast('Flux HLS : récupération du lecteur…');try{hlsInstance.recoverMediaError()}catch{}}});hlsInstance.attachMedia(video)}else if(video.canPlayType('application/vnd.apple.mpegurl')){video.src=clean}else{showToast('Ce navigateur ne prend pas en charge HLS (.m3u8).');cleanupSharedVideo();return}}else{video.src=clean}startProgressTimer();updateVideoControls()}
 function applyPendingVideoCommand(){if(!pendingVideoCommand)return;if(sharedVideoType==='youtube'){if(!(youtubePlayer&&youtubeReady))return}else{if(!sharedVideo)return;if(pendingVideoCommand.action==='play'&&sharedVideo.readyState<2)return}const c=pendingVideoCommand;pendingVideoCommand=null;applyingRemoteCommand=true;suppressVideoBroadcastUntil=Date.now()+2200;const t=Number(c.currentTime||0);if(c.action==='play'){if((sharedVideoType==='direct'||sharedVideoType==='hls')&&sharedVideo){try{if(Number.isFinite(sharedVideo.duration)&&sharedVideo.duration>0)sharedVideo.currentTime=Math.min(t,sharedVideo.duration)}catch{}playDirectVideo(sharedVideo).then(ok=>{if(!ok)pendingVideoCommand=c})}else if(sharedVideoType==='youtube'&&youtubePlayer&&youtubeReady){youtubePlayer.seekTo(t,true);youtubePlayer.playVideo()}}else if(c.action==='pause'){if((sharedVideoType==='direct'||sharedVideoType==='hls')&&sharedVideo){try{sharedVideo.currentTime=t}catch{}sharedVideo.pause()}else if(sharedVideoType==='youtube'&&youtubePlayer&&youtubeReady){youtubePlayer.seekTo(t,true);youtubePlayer.pauseVideo()}}else if(c.action==='seek'){if((sharedVideoType==='direct'||sharedVideoType==='hls')&&sharedVideo){try{sharedVideo.currentTime=t}catch{}}else if(sharedVideoType==='youtube'&&youtubePlayer&&youtubeReady){youtubePlayer.seekTo(t,true)}}setTimeout(()=>{applyingRemoteCommand=false;updateVideoControls()},1800)}
 async function requestMedia(){if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)return false;try{localStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});localVideo.srcObject=localStream;localVideo.muted=true;localVideo.playsInline=true;localVideo.autoplay=true;localVideo.play().catch(()=>{});localEmpty.style.display='none';micBtn.disabled=localStream.getAudioTracks().length===0;camBtn.disabled=localStream.getVideoTracks().length===0;return true}catch(e){console.warn('Caméra/micro indisponibles :',e);localStream=null;localVideo.srcObject=null;localEmpty.style.display='grid';micBtn.disabled=true;camBtn.disabled=true;return false}}
-function createPeerConnection(){if(peerConnection)return peerConnection;peerConnection=new RTCPeerConnection(rtcConfig);const at=peerConnection.addTransceiver('audio',{direction:'recvonly'}),vt=peerConnection.addTransceiver('video',{direction:'recvonly'});if(localStream){const a=localStream.getAudioTracks()[0]||null,v=localStream.getVideoTracks()[0]||null;at.sender.replaceTrack(a).catch(()=>{});vt.sender.replaceTrack(v).catch(()=>{});at.direction=a?'sendrecv':'recvonly';vt.direction=v?'sendrecv':'recvonly'}peerConnection.ontrack=async e=>{if(e.streams&&e.streams[0])remoteStream=e.streams[0];else{remoteStream=remoteStream||new MediaStream();if(!remoteStream.getTracks().includes(e.track))remoteStream.addTrack(e.track)}remoteVideo.srcObject=remoteStream;remoteVideo.muted=false;remoteVideo.volume=1;remoteEmpty.style.display='none';enableRemoteAudioBtn.classList.add('show');try{await remoteVideo.play();enableRemoteAudioBtn.classList.remove('show')}catch{showToast('Caméra reçue. Appuie sur 🔊 Activer le son.')}};peerConnection.onicecandidate=e=>{if(e.candidate)socket.emit('signal',{room:roomId,data:{type:'candidate',candidate:e.candidate}})};peerConnection.onconnectionstatechange=()=>{const s=peerConnection.connectionState;if(s==='connected')setStatus('Vous êtes connectés ❤️',true);else if(s==='connecting')setStatus('Connexion vidéo…');else if(s==='disconnected')setStatus('Connexion vidéo interrompue…');else if(s==='failed'){setStatus('Connexion WebRTC échouée');try{peerConnection.restartIce()}catch{}clearTimeout(renegotiationTimer);if(isInitiator)renegotiationTimer=setTimeout(()=>startOffer(true).catch(console.error),1000)}};peerConnection.oniceconnectionstatechange=()=>{const s=peerConnection.iceConnectionState;if(s==='checking')setStatus('Recherche de connexion…');if(s==='connected'||s==='completed')setStatus('Vous êtes connectés ❤️',true);if(s==='failed')showToast('Connexion ICE échouée. Vérifie le TURN.')};return peerConnection}
+function createPeerConnection(){
+  if(peerConnection)return peerConnection;
+
+  peerConnection=new RTCPeerConnection(rtcConfig);
+
+  const localAudio=localStream?.getAudioTracks()[0]||null;
+  const localVideoTrack=localStream?.getVideoTracks()[0]||null;
+
+  const at=peerConnection.addTransceiver('audio',{
+    direction:localAudio?'sendrecv':'recvonly'
+  });
+
+  const vt=peerConnection.addTransceiver('video',{
+    direction:localVideoTrack?'sendrecv':'recvonly'
+  });
+
+  if(localAudio){
+    at.sender.replaceTrack(localAudio).catch(()=>{});
+  }
+
+  if(localVideoTrack){
+    vt.sender.replaceTrack(localVideoTrack).catch(()=>{});
+  }
+
+  peerConnection.ontrack=async e=>{
+    /*
+     * Toujours construire un flux distant unique.
+     * Cela évite qu'un événement audio/vidéo remplace
+     * le flux de l'autre piste.
+     */
+    remoteStream=remoteStream||new MediaStream();
+
+    if(e.streams&&e.streams.length){
+      for(const s of e.streams){
+        for(const track of s.getTracks()){
+          if(!remoteStream.getTracks().some(t=>t.id===track.id)){
+            remoteStream.addTrack(track);
+          }
+        }
+      }
+    }
+
+    if(e.track&&!remoteStream.getTracks().some(t=>t.id===e.track.id)){
+      remoteStream.addTrack(e.track);
+    }
+
+    remoteVideo.srcObject=remoteStream;
+    remoteVideo.muted=false;
+    remoteVideo.volume=1;
+    remoteEmpty.style.display='none';
+    enableRemoteAudioBtn.classList.add('show');
+
+    try{
+      await remoteVideo.play();
+      enableRemoteAudioBtn.classList.remove('show');
+    }catch{
+      showToast('Caméra reçue. Appuie sur 🔊 Activer le son.');
+    }
+  };
+
+  peerConnection.onicecandidate=e=>{
+    if(e.candidate){
+      socket.emit('signal',{
+        room:roomId,
+        data:{
+          type:'candidate',
+          candidate:e.candidate
+        }
+      });
+    }
+  };
+
+  peerConnection.onconnectionstatechange=()=>{
+    const s=peerConnection.connectionState;
+
+    if(s==='connected'){
+      setStatus('Vous êtes connectés ❤️',true);
+    }else if(s==='connecting'){
+      setStatus('Connexion vidéo…');
+    }else if(s==='disconnected'){
+      setStatus('Connexion vidéo interrompue…');
+    }else if(s==='failed'){
+      setStatus('Connexion WebRTC échouée');
+
+      try{
+        peerConnection.restartIce();
+      }catch{}
+
+      clearTimeout(renegotiationTimer);
+
+      if(isInitiator){
+        renegotiationTimer=setTimeout(()=>{
+          startOffer(true).catch(console.error);
+        },800);
+      }
+    }
+  };
+
+  peerConnection.oniceconnectionstatechange=()=>{
+    const s=peerConnection.iceConnectionState;
+
+    if(s==='checking'){
+      setStatus('Recherche de connexion…');
+    }
+
+    if(s==='connected'||s==='completed'){
+      setStatus('Vous êtes connectés ❤️',true);
+    }
+
+    if(s==='failed'){
+      showToast('Connexion ICE échouée. Vérifie le TURN.');
+    }
+  };
+
+  return peerConnection;
+}
+
 async function syncLocalTracksWithPeer(){if(!peerConnection)return;const a=localStream?.getAudioTracks()[0]||null,v=localStream?.getVideoTracks()[0]||null;const ts=peerConnection.getTransceivers();const at=ts.find(t=>t.receiver?.track?.kind==='audio'),vt=ts.find(t=>t.receiver?.track?.kind==='video');if(at){try{await at.sender.replaceTrack(a)}catch{}at.direction=a?'sendrecv':'recvonly'}if(vt){try{await vt.sender.replaceTrack(v)}catch{}vt.direction=v?'sendrecv':'recvonly'}}
-async function startOffer(iceRestart=false){const pc=createPeerConnection();const offer=await pc.createOffer(iceRestart?{iceRestart:true}:undefined);await pc.setLocalDescription(offer);socket.emit('signal',{room:roomId,data:{type:'offer',sdp:pc.localDescription}})}
+async function startOffer(iceRestart=false){
+  const pc=createPeerConnection();
+
+  if(pc.signalingState==='have-local-offer'){
+    return;
+  }
+
+  await syncLocalTracksWithPeer();
+
+  const offer=await pc.createOffer(
+    iceRestart?{iceRestart:true}:undefined
+  );
+
+  await pc.setLocalDescription(offer);
+
+  socket.emit('signal',{
+    room:roomId,
+    data:{
+      type:'offer',
+      sdp:pc.localDescription
+    }
+  });
+}
+
+async function waitAndStartOffer(iceRestart=false){
+  if(!joined||!isInitiator)return;
+
+  try{
+    await mediaReadyPromise;
+  }catch{}
+
+  /*
+   * Laisser le second téléphone terminer l'ajout de ses pistes
+   * avant que l'initiateur envoie l'offre initiale.
+   */
+  await new Promise(resolve=>setTimeout(resolve,450));
+
+  try{
+    await startOffer(iceRestart);
+  }catch(error){
+    console.error('Offer error:',error);
+  }
+}
+
 async function flushPendingIceCandidates(pc){if(!pc.remoteDescription)return;const q=pendingIceCandidates.splice(0);for(const c of q){try{await pc.addIceCandidate(c)}catch(e){console.warn('ICE candidate ignoré:',e)}}}
-async function handleSignal(data){const pc=createPeerConnection();try{try{await syncLocalTracksWithPeer()}catch{}if(data.type==='offer'){await pc.setRemoteDescription(data.sdp);await flushPendingIceCandidates(pc);const ans=await pc.createAnswer();await pc.setLocalDescription(ans);socket.emit('signal',{room:roomId,data:{type:'answer',sdp:pc.localDescription}})}else if(data.type==='answer'){await pc.setRemoteDescription(data.sdp);await flushPendingIceCandidates(pc)}else if(data.type==='candidate'&&data.candidate){if(pc.remoteDescription)await pc.addIceCandidate(data.candidate);else pendingIceCandidates.push(data.candidate)}}catch(e){console.error('WebRTC signaling error:',e);showToast('Erreur de connexion vidéo.')}}
-function resetPeer(){pendingIceCandidates=[];if(peerConnection){peerConnection.ontrack=null;peerConnection.onicecandidate=null;try{peerConnection.close()}catch{}peerConnection=null}remoteVideo.srcObject=null;remoteStream=null;remoteVideo.muted=false;enableRemoteAudioBtn.classList.remove('show');remoteEmpty.style.display='grid'}
+async function handleSignal(data){
+  const pc=createPeerConnection();
+
+  try{
+    try{
+      await syncLocalTracksWithPeer();
+    }catch{}
+
+    if(data.type==='offer'){
+      await pc.setRemoteDescription(data.sdp);
+      await flushPendingIceCandidates(pc);
+
+      /*
+       * Après réception de l'offre, on s'assure que nos pistes
+       * locales sont bien présentes avant createAnswer().
+       */
+      await syncLocalTracksWithPeer();
+
+      const ans=await pc.createAnswer();
+
+      await pc.setLocalDescription(ans);
+
+      socket.emit('signal',{
+        room:roomId,
+        data:{
+          type:'answer',
+          sdp:pc.localDescription
+        }
+      });
+
+    }else if(data.type==='answer'){
+      await pc.setRemoteDescription(data.sdp);
+      await flushPendingIceCandidates(pc);
+
+      /*
+       * Si l'initiateur ne reçoit aucune piste distante,
+       * forcer une seconde négociation après la première réponse.
+       */
+      if(isInitiator){
+        clearTimeout(renegotiationTimer);
+
+        renegotiationTimer=setTimeout(()=>{
+          if(
+            joined &&
+            peerConnection &&
+            peerConnection.connectionState!=='connected' &&
+            (!remoteStream ||
+             remoteStream.getTracks().length===0)
+          ){
+            startOffer(true).catch(console.error);
+          }
+        },1400);
+      }
+
+    }else if(
+      data.type==='candidate' &&
+      data.candidate
+    ){
+      if(pc.remoteDescription){
+        await pc.addIceCandidate(data.candidate);
+      }else{
+        pendingIceCandidates.push(data.candidate);
+      }
+    }
+
+  }catch(e){
+    console.error(
+      'WebRTC signaling error:',
+      e
+    );
+
+    showToast(
+      'Erreur de connexion vidéo.'
+    );
+  }
+}
+
+function resetPeer(){pendingIceCandidates=[];clearTimeout(renegotiationTimer);if(peerConnection){peerConnection.ontrack=null;peerConnection.onicecandidate=null;try{peerConnection.close()}catch{}peerConnection=null}remoteVideo.srcObject=null;remoteStream=null;remoteVideo.muted=false;enableRemoteAudioBtn.classList.remove('show');remoteEmpty.style.display='grid'}
 function stopMedia(){localStream?.getTracks().forEach(t=>t.stop());localStream=null;localVideo.srcObject=null;localEmpty.style.display='grid';micBtn.disabled=true;camBtn.disabled=true}
 async function joinRoom(){const room=roomInput.value.trim().toUpperCase();if(!room)return showToast('Entre un code de salon.');if(joined)return showToast('Tu es déjà dans un salon.');mediaReadyPromise=requestMedia().catch(()=>false);setStatus('Connexion au salon…');socket.emit('join-room',room,response=>{if(!response?.ok){setStatus('Hors appel');showToast(response?.error||'Impossible de rejoindre le salon.');return}roomId=response.room;isInitiator=response.initiator;setRoomCount(response.count||1);joined=true;roomInput.value=roomId;setRoomInUrl(roomId);copyBtn.disabled=false;loadVideoBtn.disabled=false;joinBtn.disabled=true;createBtn.disabled=true;hangupBtn.disabled=false;setStatus(response.count===2?'2/2 — Connexion vidéo…':'En attente de ta copine…');socket.emit('request-video-state');showToast(response.count===2?'Salon connecté ❤️':'Salon prêt. Partage le lien avec elle ❤️')})}
 function leaveRoom(){if(joined)socket.emit('leave-room');joined=false;isInitiator=false;resetPeer();stopMedia();roomId='';copyBtn.disabled=true;joinBtn.disabled=false;createBtn.disabled=false;hangupBtn.disabled=true;loadVideoBtn.disabled=true;cleanupSharedVideo();clearVideoBtn.disabled=true;setRoomCount(0);setStatus('Hors appel')}
@@ -124,7 +359,29 @@ back10Btn.addEventListener('click',()=>{const v=Math.max(0,getSharedTime()-10);i
 forward10Btn.addEventListener('click',()=>{const d=(sharedVideoType==='direct'||sharedVideoType==='hls')?(sharedVideo?.duration||Infinity):(youtubePlayer?.getDuration?.()||Infinity),v=Math.min(d,getSharedTime()+10);if((sharedVideoType==='direct'||sharedVideoType==='hls')&&sharedVideo)sharedVideo.currentTime=v;else if(sharedVideoType==='youtube'&&youtubePlayer&&youtubeReady)youtubePlayer.seekTo(v,true);sendVideoCommand('seek',{currentTime:v})});
 socket.on('connect',()=>{if(!joined)setStatus('Prêt à appeler')});
 socket.on('room-count',({count})=>{setRoomCount(count);if(joined){if(count===2)setStatus('2/2 — Connexion vidéo…');else if(count===1)setStatus('En attente de ta copine…')}});
-socket.on('room-ready',async({initiator})=>{if(!joined)return;isInitiator=initiator;setRoomCount(2);setStatus('Connexion vidéo…');try{await mediaReadyPromise}catch{}createPeerConnection();try{await syncLocalTracksWithPeer()}catch{}socket.emit('request-video-state');if(isInitiator)await startOffer()});
+socket.on('room-ready',async({initiator})=>{
+  if(!joined)return;
+
+  isInitiator=initiator;
+  setRoomCount(2);
+  setStatus('Connexion vidéo…');
+
+  try{
+    await mediaReadyPromise;
+  }catch{}
+
+  createPeerConnection();
+
+  try{
+    await syncLocalTracksWithPeer();
+  }catch{}
+
+  socket.emit('request-video-state');
+
+  if(isInitiator){
+    await waitAndStartOffer(false);
+  }
+});
 socket.on('signal',handleSignal);
 socket.on('shared-video-state',state=>{if(!joined||!state?.url)return;if(!pendingVideoCommand&&state.playing){pendingVideoCommand={action:'play',currentTime:state.currentTime||0,playing:true}}loadSharedVideo(state.url,state.mediaType,state.currentTime||0,Boolean(state.playing));setTimeout(()=>applyPendingVideoCommand(),500)});
 socket.on('video-command',cmd=>{if(!joined)return;if(cmd.action==='load'&&cmd.url){pendingVideoCommand=null;loadSharedVideo(cmd.url,cmd.mediaType,cmd.currentTime||0,Boolean(cmd.playing));if(cmd.playing)pendingVideoCommand={action:'play',currentTime:cmd.currentTime||0,playing:true};setTimeout(()=>applyPendingVideoCommand(),150);setTimeout(()=>applyPendingVideoCommand(),700);setTimeout(()=>applyPendingVideoCommand(),1600);return}if(cmd.action==='play'){pendingVideoCommand={...cmd};applyPendingVideoCommand();setTimeout(()=>applyPendingVideoCommand(),400);setTimeout(()=>applyPendingVideoCommand(),1200);return}if(!sharedVideo&&!(youtubePlayer&&youtubeReady)){pendingVideoCommand={...cmd};return}applyingRemoteCommand=true;suppressVideoBroadcastUntil=Date.now()+2200;const t=Number(cmd.currentTime||0);try{if(cmd.action==='pause'){if((sharedVideoType==='direct'||sharedVideoType==='hls')&&sharedVideo){try{sharedVideo.currentTime=t}catch{}sharedVideo.pause()}else if(sharedVideoType==='youtube'&&youtubePlayer&&youtubeReady){youtubePlayer.seekTo(t,true);youtubePlayer.pauseVideo()}}else if(cmd.action==='seek'){if((sharedVideoType==='direct'||sharedVideoType==='hls')&&sharedVideo){try{sharedVideo.currentTime=t}catch{}}else if(sharedVideoType==='youtube'&&youtubePlayer&&youtubeReady){youtubePlayer.seekTo(t,true)}}}finally{setTimeout(()=>{applyingRemoteCommand=false;updateVideoControls()},1800)}});
