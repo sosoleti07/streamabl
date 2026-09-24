@@ -387,56 +387,6 @@
       align-items: center;
     }
 
-    .media-status {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .media-status-item {
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .media-status-item strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .media-status-item.ok strong {
-      color: var(--ok);
-    }
-
-    .media-status-item.bad strong {
-      color: #ff8b99;
-    }
-
-    .media-test-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .media-error {
-      min-height: 18px;
-      color: #ffb4bf;
-      font-size: 11px;
-      line-height: 1.5;
-      margin-top: 7px;
-    }
-
     .fullscreen-hint {
       margin-top: 8px;
       color: var(--muted);
@@ -565,10 +515,6 @@
         padding: 12px;
       }
 
-      .media-status {
-        grid-template-columns: 1fr;
-      }
-
       .fullscreen-btn {
         margin-left: 0;
       }
@@ -624,37 +570,7 @@
 
       </div>
 
-      <div class="media-check" style="padding: 0 18px 4px;">
-
-        <div class="media-status">
-
-          <div id="cameraStatus" class="media-status-item">
-            <span>📹 Caméra</span>
-            <strong>À tester</strong>
-          </div>
-
-          <div id="microphoneStatus" class="media-status-item">
-            <span>🎙️ Micro</span>
-            <strong>À tester</strong>
-          </div>
-
-        </div>
-
-        <div class="media-test-row">
-
-          <button id="testMediaBtn" class="btn secondary">
-            🎥 Tester caméra + micro
-          </button>
-
-          <span id="secureContextHint" class="subtitle">
-            La vérification se fait directement dans Brave.
-          </span>
-
-        </div>
-
-        <div id="mediaError" class="media-error"></div>
-
-      </div>
+      <div id="mediaError" class="media-error" style="padding: 0 18px; color: #ffb4bf; font-size: 11px; line-height: 1.5;"></div>
 
       <div class="watch-box">
 
@@ -935,18 +851,6 @@
     const watchLayout =
       document.querySelector('.watch-layout');
 
-    const testMediaBtn =
-      document.getElementById('testMediaBtn');
-
-    const cameraStatus =
-      document.getElementById('cameraStatus');
-
-    const microphoneStatus =
-      document.getElementById('microphoneStatus');
-
-    const secureContextHint =
-      document.getElementById('secureContextHint');
-
     const mediaError =
       document.getElementById('mediaError');
 
@@ -973,8 +877,6 @@
 
     let applyingRemoteCommand = false;
 
-    let suppressVideoBroadcastUntil = 0;
-
     let progressTimer = null;
 
     let remoteStream = null;
@@ -984,8 +886,7 @@
     let lastAppliedVideoKey = '';
 
     /*
-     * Nouveauté :
-     * permet d'attendre que le MP4 soit réellement prêt
+     * Permet d'attendre que le MP4 soit réellement prêt
      * avant d'appliquer l'état reçu de la room.
      */
     let pendingDirectState = null;
@@ -1031,22 +932,6 @@
     }
 
 
-    function setMediaStatus(element, state, text) {
-
-      element.classList.remove('ok', 'bad');
-
-      if (state === 'ok') {
-        element.classList.add('ok');
-      }
-
-      if (state === 'bad') {
-        element.classList.add('bad');
-      }
-
-      element.querySelector('strong').textContent = text;
-    }
-
-
     function errorText(error) {
 
       const name =
@@ -1055,7 +940,7 @@
       const map = {
 
         NotAllowedError:
-          'Brave bloque l’accès ou la permission n’est pas réellement accordée pour ce site. Vérifie les permissions du domaine Render.',
+          'L’accès à la caméra/micro n’a pas été autorisé pour ce site.',
 
         NotFoundError:
           'Aucune caméra ou aucun micro compatible n’a été trouvé.',
@@ -1070,7 +955,7 @@
           'L’accès multimédia est bloqué par une règle de sécurité du navigateur.',
 
         AbortError:
-          'Brave ou Windows a interrompu l’accès au périphérique. Une autre application peut utiliser la caméra/micro, ou le pilote peut avoir besoin d’être réinitialisé.',
+          'Le navigateur a interrompu l’accès au périphérique. Une autre application peut utiliser la caméra/micro.',
 
         InvalidStateError:
           'La page n’est pas dans un état actif pour demander la caméra/le micro.',
@@ -1080,67 +965,6 @@
       };
 
       return `${name}: ${map[name] || 'Erreur inconnue lors de l’accès à la caméra ou au micro.'}`;
-    }
-
-
-    async function readPermissionState() {
-
-      if (!navigator.permissions?.query) {
-        return;
-      }
-
-      for (
-        const item of [
-          ['camera', cameraStatus],
-          ['microphone', microphoneStatus]
-        ]
-      ) {
-
-        try {
-
-          const permission =
-            await navigator.permissions.query({
-              name: item[0]
-            });
-
-          const value =
-            permission.state;
-
-          if (value === 'granted') {
-
-            setMediaStatus(
-              item[1],
-              'ok',
-              'Autorisé'
-            );
-
-          } else if (value === 'denied') {
-
-            setMediaStatus(
-              item[1],
-              'bad',
-              'Bloqué'
-            );
-
-          } else {
-
-            setMediaStatus(
-              item[1],
-              '',
-              'À autoriser'
-            );
-
-          }
-
-          permission.onchange =
-            () => readPermissionState();
-
-        } catch (_) {
-          // Certains navigateurs ne permettent pas cet état.
-        }
-
-      }
-
     }
 
 
@@ -1535,9 +1359,6 @@
       { resetKey = true } = {}
     ) {
 
-      suppressVideoBroadcastUntil =
-        Date.now() + 1500;
-
       applyingRemoteCommand = true;
 
       clearInterval(progressTimer);
@@ -1598,12 +1419,7 @@
 
       updateVideoControls();
 
-      setTimeout(
-        () => {
-          applyingRemoteCommand = false;
-        },
-        50
-      );
+      applyingRemoteCommand = false;
 
     }
 
@@ -1922,7 +1738,8 @@
 
       /*
        * Même vidéo déjà chargée :
-       * on ne détruit PAS le lecteur.
+       * on ne détruit PAS le lecteur, on resynchronise
+       * juste sa position/état de lecture.
        */
       if (
         videoKey ===
@@ -1931,8 +1748,7 @@
           nextType
       ) {
 
-        suppressVideoBroadcastUntil =
-          Date.now() + 1200;
+        applyingRemoteCommand = true;
 
 
         if (
@@ -1954,25 +1770,12 @@
               ) > 1.5
             ) {
 
-              applyingRemoteCommand = true;
-
               youtubePlayer.seekTo(
                 Number(startAt || 0),
                 true
               );
 
-              setTimeout(
-                () => {
-                  applyingRemoteCommand =
-                    false;
-                },
-                100
-              );
-
             }
-
-
-            applyingRemoteCommand = true;
 
 
             if (
@@ -1996,16 +1799,9 @@
 
             }
 
-
-            setTimeout(
-              () => {
-                applyingRemoteCommand =
-                  false;
-              },
-              150
-            );
-
           }
+
+          applyingRemoteCommand = false;
 
           return;
         }
@@ -2017,28 +1813,20 @@
           sharedVideo
         ) {
 
-          applyingRemoteCommand = true;
-
           applyDirectVideoState(
             sharedVideo,
             Number(startAt || 0),
             Boolean(shouldPlay)
           );
 
-          setTimeout(
-            () => {
+          applyingRemoteCommand = false;
 
-              applyingRemoteCommand =
-                false;
-
-              updateVideoControls();
-
-            },
-            150
-          );
+          updateVideoControls();
 
           return;
         }
+
+        applyingRemoteCommand = false;
 
       }
 
@@ -2051,6 +1839,8 @@
       });
 
 
+      applyingRemoteCommand = true;
+
       lastAppliedVideoKey =
         videoKey;
 
@@ -2062,9 +1852,6 @@
 
       watchEmpty.style.display =
         'none';
-
-      suppressVideoBroadcastUntil =
-        Date.now() + 1500;
 
 
       if (
@@ -2084,6 +1871,8 @@
             'Lien YouTube invalide.'
           );
 
+          applyingRemoteCommand = false;
+
           cleanupSharedVideo();
 
           return;
@@ -2099,6 +1888,8 @@
 
         updateVideoControls();
 
+        applyingRemoteCommand = false;
+
         return;
       }
 
@@ -2110,6 +1901,17 @@
        * IMPORTANT :
        * On ne force PAS crossOrigin="anonymous".
        * Certains serveurs MP4 refusent cette lecture.
+       *
+       * IMPORTANT (sync) :
+       * Cet élément vidéo n'a AUCUN contrôle natif
+       * (video.controls reste à false). Toutes les actions
+       * de lecture/pause/déplacement passent uniquement par
+       * les boutons de l'application, qui appellent déjà
+       * sendVideoCommand() explicitement. On n'attache donc
+       * PAS d'écouteurs "play"/"pause"/"seeking" qui
+       * rebroadcasteraient une deuxième fois la même action
+       * (c'était la cause des doublons / de la désynchro
+       * en cas de lecture lente ou de mise en mémoire tampon).
        */
       const video =
         document.createElement(
@@ -2173,9 +1975,6 @@
           pendingDirectState =
             null;
 
-          applyingRemoteCommand =
-            true;
-
 
           const time =
             Number(
@@ -2214,26 +2013,13 @@
               () => {
 
                 showToast(
-                  'La vidéo est chargée. Appuie sur ▶ Lecture si Brave bloque la lecture automatique.'
+                  'La vidéo est chargée. Appuie sur ▶ Lecture si le navigateur bloque la lecture automatique.'
                 );
 
               }
             );
 
           }
-
-
-          setTimeout(
-            () => {
-
-              applyingRemoteCommand =
-                false;
-
-              updateVideoControls();
-
-            },
-            150
-          );
 
         };
 
@@ -2265,115 +2051,13 @@
 
       video.addEventListener(
         'play',
-        () => {
-
-          if (
-            !applyingRemoteCommand &&
-            Date.now() >
-              suppressVideoBroadcastUntil
-          ) {
-
-            sendVideoCommand(
-              'play',
-              {
-
-                currentTime:
-                  video.currentTime,
-
-                playing: true
-
-              }
-            );
-
-          }
-
-          updateVideoControls();
-
-        }
+        updateVideoControls
       );
 
 
       video.addEventListener(
         'pause',
-        () => {
-
-          if (
-            !applyingRemoteCommand &&
-            Date.now() >
-              suppressVideoBroadcastUntil
-          ) {
-
-            sendVideoCommand(
-              'pause',
-              {
-
-                currentTime:
-                  video.currentTime,
-
-                playing: false
-
-              }
-            );
-
-          }
-
-          updateVideoControls();
-
-        }
-      );
-
-
-      video.addEventListener(
-        'seeking',
-        () => {
-
-          if (
-            !applyingRemoteCommand &&
-            Date.now() >
-              suppressVideoBroadcastUntil
-          ) {
-
-            sendVideoCommand(
-              'seek',
-              {
-
-                currentTime:
-                  video.currentTime
-
-              }
-            );
-
-          }
-
-        }
-      );
-
-
-      video.addEventListener(
-        'seeked',
-        () => {
-
-          if (
-            !applyingRemoteCommand &&
-            Date.now() >
-              suppressVideoBroadcastUntil
-          ) {
-
-            sendVideoCommand(
-              'seek',
-              {
-
-                currentTime:
-                  video.currentTime
-
-              }
-            );
-
-          }
-
-          updateVideoControls();
-
-        }
+        updateVideoControls
       );
 
 
@@ -2526,6 +2210,8 @@
             'Ce navigateur ne prend pas en charge HLS (.m3u8).'
           );
 
+          applyingRemoteCommand = false;
+
           cleanupSharedVideo();
 
           return;
@@ -2546,6 +2232,8 @@
       startProgressTimer();
 
       updateVideoControls();
+
+      applyingRemoteCommand = false;
 
     }
 
@@ -2582,32 +2270,6 @@
 
       camBtn.disabled =
         stream.getVideoTracks().length === 0;
-
-
-      setMediaStatus(
-        cameraStatus,
-        stream.getVideoTracks().length
-          ? 'ok'
-          : 'bad',
-        stream.getVideoTracks().length
-          ? 'Active'
-          : 'Introuvable'
-      );
-
-
-      setMediaStatus(
-        microphoneStatus,
-        stream.getAudioTracks().length
-          ? 'ok'
-          : 'bad',
-        stream.getAudioTracks().length
-          ? 'Actif'
-          : 'Introuvable'
-      );
-
-
-      secureContextHint.textContent =
-        'Caméra et micro prêts.';
 
     }
 
@@ -2751,11 +2413,7 @@
     }
 
 
-    async function prepareMedia(
-      {
-        fromTestButton = false
-      } = {}
-    ) {
+    async function prepareMedia() {
 
       if (
         localStream &&
@@ -2798,22 +2456,7 @@
       ) {
 
         mediaError.textContent =
-          'Cette page n’est pas sécurisée. Ouvre le lien Render en HTTPS, pas en HTTP.';
-
-
-        setMediaStatus(
-          cameraStatus,
-          'bad',
-          'HTTPS requis'
-        );
-
-
-        setMediaStatus(
-          microphoneStatus,
-          'bad',
-          'HTTPS requis'
-        );
-
+          'Cette page n’est pas sécurisée. Ouvre le lien en HTTPS, pas en HTTP.';
 
         showToast(
           'La caméra et le micro nécessitent HTTPS.'
@@ -2832,21 +2475,6 @@
         mediaError.textContent =
           'getUserMedia n’est pas disponible dans ce navigateur/contexte.';
 
-
-        setMediaStatus(
-          cameraStatus,
-          'bad',
-          'Indisponible'
-        );
-
-
-        setMediaStatus(
-          microphoneStatus,
-          'bad',
-          'Indisponible'
-        );
-
-
         showToast(
           'Caméra/micro indisponibles dans ce contexte.'
         );
@@ -2859,24 +2487,6 @@
 
       try {
 
-        setMediaStatus(
-          cameraStatus,
-          '',
-          'Ouverture…'
-        );
-
-
-        setMediaStatus(
-          microphoneStatus,
-          '',
-          'Ouverture…'
-        );
-
-
-        secureContextHint.textContent =
-          'Ouverture de la caméra et du micro…';
-
-
         localStream =
           await requestMediaRobust();
 
@@ -2884,18 +2494,6 @@
         applyLocalStream(
           localStream
         );
-
-
-        await readPermissionState();
-
-
-        if (fromTestButton) {
-
-          showToast(
-            '✅ Caméra et micro fonctionnent.'
-          );
-
-        }
 
 
         return true;
@@ -2983,106 +2581,18 @@
 
         if (
           error?.name ===
-          'NotFoundError'
-        ) {
-
-          setMediaStatus(
-            cameraStatus,
-            'bad',
-            'Introuvable'
-          );
-
-          setMediaStatus(
-            microphoneStatus,
-            'bad',
-            'Introuvable'
-          );
-
-
-        } else if (
-          error?.name ===
-            'NotAllowedError' ||
-          error?.name ===
-            'SecurityError'
-        ) {
-
-          setMediaStatus(
-            cameraStatus,
-            'bad',
-            'Bloqué'
-          );
-
-          setMediaStatus(
-            microphoneStatus,
-            'bad',
-            'Bloqué'
-          );
-
-
-        } else if (
-          error?.name ===
-            'NotReadableError' ||
-          error?.name ===
-            'AbortError'
-        ) {
-
-          setMediaStatus(
-            cameraStatus,
-            'bad',
-            'Périphérique occupé'
-          );
-
-
-          setMediaStatus(
-            microphoneStatus,
-            'bad',
-            'Périphérique occupé'
-          );
-
-
-          secureContextHint.textContent =
-            'Ferme les applications qui utilisent la caméra/micro, puis réessaie.';
-
-
-        } else {
-
-          setMediaStatus(
-            cameraStatus,
-            'bad',
-            'Erreur'
-          );
-
-
-          setMediaStatus(
-            microphoneStatus,
-            'bad',
-            'Erreur'
-          );
-
-        }
-
-
-        await readPermissionState();
-
-
-        if (
-          error?.name ===
             'AbortError' ||
           error?.name ===
             'NotReadableError'
         ) {
 
           showToast(
-            'Le périphérique est probablement occupé. Ferme Teams, Zoom, Discord, OBS ou l’application Caméra, puis réessaie.'
+            'Le périphérique est probablement occupé. Ferme les autres applications qui utilisent la caméra/micro, puis réessaie.'
           );
 
         } else {
 
-          showToast(
-            fromTestButton
-              ? details
-              : 'Caméra/micro non disponibles : utilise d’abord « Tester caméra + micro ».'
-          );
+          showToast(details);
 
         }
 
@@ -3776,9 +3286,9 @@
 
 
           /*
-           * Un seul appel.
-           * L'ancien double appel pouvait provoquer
-           * un rechargement inutile de la vidéo.
+           * Un seul appel : l'état vidéo de la room
+           * (s'il y en a un) est redemandé au serveur
+           * une fois qu'on a rejoint.
            */
           socket.emit(
             'request-video-state'
@@ -3904,15 +3414,6 @@
         }
 
       }
-    );
-
-
-    testMediaBtn.addEventListener(
-      'click',
-      () =>
-        prepareMedia({
-          fromTestButton: true
-        })
     );
 
 
@@ -4284,10 +3785,6 @@
           getSharedTime();
 
 
-        suppressVideoBroadcastUntil =
-          Date.now() + 1200;
-
-
         applyingRemoteCommand =
           true;
 
@@ -4350,17 +3847,10 @@
         }
 
 
-        setTimeout(
-          () => {
+        applyingRemoteCommand =
+          false;
 
-            applyingRemoteCommand =
-              false;
-
-            updateVideoControls();
-
-          },
-          200
-        );
+        updateVideoControls();
 
 
         sendVideoCommand(
@@ -4430,13 +3920,8 @@
           }`;
 
 
-        setTimeout(
-          () => {
-            applyingRemoteCommand =
-              false;
-          },
-          100
-        );
+        applyingRemoteCommand =
+          false;
 
       }
     );
@@ -4506,13 +3991,10 @@
         }
 
 
-        setTimeout(
-          () => {
-            applyingRemoteCommand =
-              false;
-          },
-          100
-        );
+        applyingRemoteCommand =
+          false;
+
+        updateVideoControls();
 
 
         sendVideoCommand(
@@ -4583,13 +4065,10 @@
         }
 
 
-        setTimeout(
-          () => {
-            applyingRemoteCommand =
-              false;
-          },
-          100
-        );
+        applyingRemoteCommand =
+          false;
+
+        updateVideoControls();
 
 
         sendVideoCommand(
@@ -4684,14 +4163,6 @@
         createPeerConnection();
 
 
-        /*
-         * On demande l'état vidéo une seule fois.
-         */
-        socket.emit(
-          'request-video-state'
-        );
-
-
         if (isInitiator) {
 
           await startOffer();
@@ -4768,10 +4239,6 @@
 
         applyingRemoteCommand =
           true;
-
-
-        suppressVideoBroadcastUntil =
-          Date.now() + 1500;
 
 
         try {
@@ -4895,17 +4362,10 @@
 
         } finally {
 
-          setTimeout(
-            () => {
+          applyingRemoteCommand =
+            false;
 
-              applyingRemoteCommand =
-                false;
-
-              updateVideoControls();
-
-            },
-            100
-          );
+          updateVideoControls();
 
         }
 
@@ -4984,18 +4444,9 @@
     }
 
 
-    secureContextHint.textContent =
-      window.isSecureContext
-        ? 'HTTPS détecté. Clique sur « Tester caméra + micro ».'
-        : '⚠️ HTTPS nécessaire pour la caméra et le micro.';
-
-
     setRoomCount(
       0
     );
-
-
-    readPermissionState();
 
 
     /*
