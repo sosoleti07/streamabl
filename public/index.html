@@ -4,27 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0d1021" />
+
   <title>Our Little Video Call ❤️</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
 
+  <!-- HLS chargé AVANT notre code -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <style>
     :root {
       --bg: #090b16;
       --panel: rgba(20, 24, 43, .82);
-      --panel-2: rgba(255, 255, 255, .06);
       --line: rgba(255, 255, 255, .10);
       --text: #f8f8ff;
       --muted: #aeb2c7;
       --accent: #ff5c8a;
-      --accent-2: #ff86a7;
       --danger: #ff4d65;
       --ok: #55d991;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -194,6 +198,14 @@
       border-bottom: 1px solid var(--line);
     }
 
+    .watch-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
     .watch-layout {
       isolation: isolate;
       position: relative;
@@ -217,12 +229,16 @@
     }
 
     #sharedMedia video,
-    #sharedMedia iframe {
+    #sharedMedia iframe,
+    #sharedMedia > div {
       width: 100%;
       height: 100%;
       display: block;
       border: 0;
       background: #000;
+    }
+
+    #sharedMedia video {
       object-fit: contain;
     }
 
@@ -322,14 +338,6 @@
       display: inline-flex;
     }
 
-    .watch-toolbar {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
-      gap: 10px;
-      align-items: end;
-      margin-bottom: 12px;
-    }
-
     .watch-actions {
       display: flex;
       gap: 8px;
@@ -387,12 +395,6 @@
       align-items: center;
     }
 
-    .fullscreen-hint {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
     .watch-controls .btn {
       min-width: 48px;
     }
@@ -416,9 +418,10 @@
       line-height: 1.5;
     }
 
-    .videos {
-      padding: 0;
-      display: none;
+    .fullscreen-hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
     }
 
     .controls {
@@ -464,7 +467,7 @@
       opacity: 0;
       pointer-events: none;
       transition: .25s ease;
-      max-width: min(90vw, 520px);
+      max-width: min(90vw, 600px);
       padding: 12px 15px;
       border-radius: 13px;
       background: #171b2e;
@@ -472,6 +475,7 @@
       box-shadow: 0 20px 50px rgba(0,0,0,.35);
       font-size: 13px;
       z-index: 20;
+      text-align: center;
     }
 
     .toast.show {
@@ -523,58 +527,99 @@
 </head>
 
 <body>
+
   <main class="shell">
 
     <header>
+
       <div class="brand">
-        <div class="heart">❤️</div>
+
+        <div class="heart">
+          ❤️
+        </div>
 
         <div>
           <h1>Our Little Video Call</h1>
-          <p class="subtitle">Un salon vidéo privé pour vous deux</p>
+          <p class="subtitle">
+            Un salon vidéo privé pour vous deux
+          </p>
         </div>
+
       </div>
 
       <div class="status">
+
         <span id="statusDot" class="dot"></span>
-        <span id="statusText">Hors appel</span>
-        <span id="roomCount" style="margin-left:8px;color:#d9dbea">• 0/2</span>
+
+        <span id="statusText">
+          Hors appel
+        </span>
+
+        <span
+          id="roomCount"
+          style="margin-left:8px;color:#d9dbea"
+        >
+          • 0/2
+        </span>
+
       </div>
+
     </header>
 
+
     <section class="card">
+
 
       <div class="room-bar">
 
         <div class="field">
-          <label for="roomInput">Code du salon</label>
+
+          <label for="roomInput">
+            Code du salon
+          </label>
+
           <input
             id="roomInput"
             maxlength="32"
             placeholder="Ex. SOFIANE-MON-SOLEIL"
             autocomplete="off"
           />
+
         </div>
 
-        <button id="createBtn" class="btn secondary">
+
+        <button
+          id="createBtn"
+          class="btn secondary"
+        >
           Créer un salon
         </button>
 
-        <button id="joinBtn" class="btn primary">
+
+        <button
+          id="joinBtn"
+          class="btn primary"
+        >
           Rejoindre
         </button>
 
-        <button id="copyBtn" class="btn secondary" disabled>
+
+        <button
+          id="copyBtn"
+          class="btn secondary"
+          disabled
+        >
           Copier le lien
         </button>
 
       </div>
 
-      <div id="mediaError" class="media-error" style="padding: 0 18px; color: #ffb4bf; font-size: 11px; line-height: 1.5;"></div>
 
       <div class="watch-box">
 
+
         <div class="watch-toolbar">
+
 
           <div class="field">
 
@@ -591,17 +636,30 @@
 
           </div>
 
-          <button id="loadVideoBtn" class="btn primary" disabled>
+
+          <button
+            id="loadVideoBtn"
+            class="btn primary"
+            disabled
+          >
             ▶ Charger
           </button>
 
-          <button id="clearVideoBtn" class="btn secondary" disabled>
+
+          <button
+            id="clearVideoBtn"
+            class="btn secondary"
+            disabled
+          >
             ✕ Effacer
           </button>
 
+
         </div>
 
+
         <div class="watch-layout">
+
 
           <button
             id="exitFullscreenBtn"
@@ -611,19 +669,29 @@
             ✕ Quitter le plein écran
           </button>
 
+
           <div id="sharedMedia">
 
-            <div id="watchEmpty" class="watch-empty">
+            <div
+              id="watchEmpty"
+              class="watch-empty"
+            >
 
               <div>
-                <strong>🎬 Vidéo partagée</strong>
+
+                <strong>
+                  🎬 Vidéo partagée
+                </strong>
+
                 Collez un lien puis chargez-le.
                 La lecture sera synchronisée entre vous deux.
+
               </div>
 
             </div>
 
           </div>
+
 
           <div class="camera-card remote">
 
@@ -637,7 +705,10 @@
               Ta copine
             </div>
 
-            <div id="remoteEmpty" class="camera-empty">
+            <div
+              id="remoteEmpty"
+              class="camera-empty"
+            >
               En attente de sa caméra…
             </div>
 
@@ -650,6 +721,7 @@
             </button>
 
           </div>
+
 
           <div class="camera-card local">
 
@@ -664,15 +736,21 @@
               Toi
             </div>
 
-            <div id="localEmpty" class="camera-empty">
+            <div
+              id="localEmpty"
+              class="camera-empty"
+            >
               Ta caméra apparaîtra ici
             </div>
 
           </div>
 
+
         </div>
 
+
         <div class="watch-controls">
+
 
           <button
             id="playPauseBtn"
@@ -681,6 +759,7 @@
           >
             ▶ Lecture
           </button>
+
 
           <input
             id="videoProgress"
@@ -693,9 +772,14 @@
             aria-label="Progression de la vidéo"
           />
 
-          <span id="timeLabel" class="time-label">
+
+          <span
+            id="timeLabel"
+            class="time-label"
+          >
             00:00 / 00:00
           </span>
+
 
           <div class="watch-actions">
 
@@ -707,6 +791,7 @@
               ↩ 10s
             </button>
 
+
             <button
               id="forward10Btn"
               class="btn secondary"
@@ -714,6 +799,7 @@
             >
               10s ↪
             </button>
+
 
             <button
               id="fullscreenBtn"
@@ -725,7 +811,9 @@
 
           </div>
 
+
         </div>
+
 
         <div class="video-help">
           Formats pris en charge : MP4/WebM/Ogg, flux HLS (.m3u8)
@@ -733,12 +821,15 @@
           sont synchronisées pour les deux personnes.
         </div>
 
+
         <div class="fullscreen-hint">
           Le bouton plein écran agrandit la zone vidéo
           <strong>sans enlever vos deux petites caméras</strong>.
         </div>
 
+
       </div>
+
 
       <div class="controls">
 
@@ -751,6 +842,7 @@
           🎙️
         </button>
 
+
         <button
           id="camBtn"
           class="control"
@@ -759,6 +851,7 @@
         >
           📹
         </button>
+
 
         <button
           id="hangupBtn"
@@ -770,92 +863,174 @@
 
       </div>
 
+
       <div class="hint">
-        Les appels utilisent WebRTC.
+
+        La caméra et le micro sont activés automatiquement
+        lorsque tu rejoins le salon.
+
         Pour un appel depuis Internet, le site doit être servi en
-        <strong>HTTPS</strong> (sauf en local).
+        <strong>HTTPS</strong>.
+
       </div>
+
 
     </section>
 
   </main>
 
-  <div id="toast" class="toast"></div>
+
+  <div
+    id="toast"
+    class="toast"
+  ></div>
+
 
   <script src="/rtc-config.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
+
   <script>
+
     const socket = io();
 
-    const roomInput = document.getElementById('roomInput');
-    const createBtn = document.getElementById('createBtn');
-    const joinBtn = document.getElementById('joinBtn');
-    const copyBtn = document.getElementById('copyBtn');
 
-    const micBtn = document.getElementById('micBtn');
-    const camBtn = document.getElementById('camBtn');
-    const hangupBtn = document.getElementById('hangupBtn');
+    const roomInput =
+      document.getElementById('roomInput');
 
-    const localVideo = document.getElementById('localVideo');
-    const remoteVideo = document.getElementById('remoteVideo');
+    const createBtn =
+      document.getElementById('createBtn');
 
-    const localEmpty = document.getElementById('localEmpty');
-    const remoteEmpty = document.getElementById('remoteEmpty');
+    const joinBtn =
+      document.getElementById('joinBtn');
+
+    const copyBtn =
+      document.getElementById('copyBtn');
+
+
+    const micBtn =
+      document.getElementById('micBtn');
+
+    const camBtn =
+      document.getElementById('camBtn');
+
+    const hangupBtn =
+      document.getElementById('hangupBtn');
+
+
+    const localVideo =
+      document.getElementById('localVideo');
+
+    const remoteVideo =
+      document.getElementById('remoteVideo');
+
+
+    const localEmpty =
+      document.getElementById('localEmpty');
+
+    const remoteEmpty =
+      document.getElementById('remoteEmpty');
+
 
     const enableRemoteAudioBtn =
-      document.getElementById('enableRemoteAudioBtn');
+      document.getElementById(
+        'enableRemoteAudioBtn'
+      );
 
-    const statusText = document.getElementById('statusText');
-    const statusDot = document.getElementById('statusDot');
-    const roomCount = document.getElementById('roomCount');
 
-    const toast = document.getElementById('toast');
+    const statusText =
+      document.getElementById(
+        'statusText'
+      );
+
+    const statusDot =
+      document.getElementById(
+        'statusDot'
+      );
+
+    const roomCount =
+      document.getElementById(
+        'roomCount'
+      );
+
+
+    const toast =
+      document.getElementById(
+        'toast'
+      );
+
 
     const videoUrlInput =
-      document.getElementById('videoUrlInput');
+      document.getElementById(
+        'videoUrlInput'
+      );
 
     const loadVideoBtn =
-      document.getElementById('loadVideoBtn');
+      document.getElementById(
+        'loadVideoBtn'
+      );
 
     const clearVideoBtn =
-      document.getElementById('clearVideoBtn');
+      document.getElementById(
+        'clearVideoBtn'
+      );
+
 
     const sharedMedia =
-      document.getElementById('sharedMedia');
+      document.getElementById(
+        'sharedMedia'
+      );
 
     const watchEmpty =
-      document.getElementById('watchEmpty');
+      document.getElementById(
+        'watchEmpty'
+      );
+
 
     const playPauseBtn =
-      document.getElementById('playPauseBtn');
+      document.getElementById(
+        'playPauseBtn'
+      );
 
     const videoProgress =
-      document.getElementById('videoProgress');
+      document.getElementById(
+        'videoProgress'
+      );
 
     const timeLabel =
-      document.getElementById('timeLabel');
+      document.getElementById(
+        'timeLabel'
+      );
 
     const back10Btn =
-      document.getElementById('back10Btn');
+      document.getElementById(
+        'back10Btn'
+      );
 
     const forward10Btn =
-      document.getElementById('forward10Btn');
+      document.getElementById(
+        'forward10Btn'
+      );
+
 
     const fullscreenBtn =
-      document.getElementById('fullscreenBtn');
+      document.getElementById(
+        'fullscreenBtn'
+      );
 
     const exitFullscreenBtn =
-      document.getElementById('exitFullscreenBtn');
+      document.getElementById(
+        'exitFullscreenBtn'
+      );
 
     const watchLayout =
-      document.querySelector('.watch-layout');
-
-    const mediaError =
-      document.getElementById('mediaError');
+      document.querySelector(
+        '.watch-layout'
+      );
 
 
     let roomId = '';
+
     let localStream = null;
 
     let peerConnection = null;
@@ -863,56 +1038,84 @@
     let pendingIceCandidates = [];
 
     let isInitiator = false;
+
     let joined = false;
 
     let toastTimer = null;
 
+
     let sharedVideo = null;
+
     let sharedVideoType = null;
 
+
     let youtubePlayer = null;
+
     let youtubeReady = false;
+
 
     let hlsInstance = null;
 
-    let applyingRemoteCommand = false;
+
+    let applyingRemoteCommand =
+      false;
+
+
+    let suppressVideoBroadcastUntil =
+      0;
+
 
     let progressTimer = null;
+
 
     let remoteStream = null;
 
     let renegotiationTimer = null;
 
-    let lastAppliedVideoKey = '';
 
-    /*
-     * Permet d'attendre que le MP4 soit réellement prêt
-     * avant d'appliquer l'état reçu de la room.
-     */
-    let pendingDirectState = null;
+    let lastAppliedVideoKey =
+      '';
+
+
+    let pendingDirectState =
+      null;
 
 
     const rtcConfig = {
+
       iceServers: [
+
         {
-          urls: 'stun:stun.l.google.com:19302'
+          urls:
+            'stun:stun.l.google.com:19302'
         },
+
         {
-          urls: 'stun:stun1.l.google.com:19302'
+          urls:
+            'stun:stun1.l.google.com:19302'
         }
+
       ],
 
-      bundlePolicy: 'max-bundle',
-      rtcpMuxPolicy: 'require'
+      bundlePolicy:
+        'max-bundle',
+
+      rtcpMuxPolicy:
+        'require'
+
     };
 
 
     const turnUrls =
-      Array.isArray(window.__RTC_CONFIG__?.turnUrls)
+      Array.isArray(
+        window.__RTC_CONFIG__?.turnUrls
+      )
         ? window.__RTC_CONFIG__.turnUrls
         : (
             window.__RTC_CONFIG__?.turnUrl
-              ? [window.__RTC_CONFIG__.turnUrl]
+              ? [
+                  window.__RTC_CONFIG__.turnUrl
+                ]
               : []
           );
 
@@ -920,82 +1123,70 @@
     if (turnUrls.length) {
 
       rtcConfig.iceServers.push({
+
         urls: turnUrls,
 
         username:
-          window.__RTC_CONFIG__.turnUsername || undefined,
+          window.__RTC_CONFIG__
+            ?.turnUsername ||
+          undefined,
 
         credential:
-          window.__RTC_CONFIG__.turnCredential || undefined
+          window.__RTC_CONFIG__
+            ?.turnCredential ||
+          undefined
+
       });
 
     }
 
 
-    function errorText(error) {
+    function showToast(
+      message
+    ) {
 
-      const name =
-        error?.name || 'UnknownError';
+      clearTimeout(
+        toastTimer
+      );
 
-      const map = {
+      toast.textContent =
+        message;
 
-        NotAllowedError:
-          'L’accès à la caméra/micro n’a pas été autorisé pour ce site.',
-
-        NotFoundError:
-          'Aucune caméra ou aucun micro compatible n’a été trouvé.',
-
-        NotReadableError:
-          'La caméra ou le micro est déjà utilisé, désactivé au niveau du système, ou inaccessible au pilote.',
-
-        OverconstrainedError:
-          'Les périphériques disponibles ne correspondent pas aux contraintes demandées.',
-
-        SecurityError:
-          'L’accès multimédia est bloqué par une règle de sécurité du navigateur.',
-
-        AbortError:
-          'Le navigateur a interrompu l’accès au périphérique. Une autre application peut utiliser la caméra/micro.',
-
-        InvalidStateError:
-          'La page n’est pas dans un état actif pour demander la caméra/le micro.',
-
-        TypeError:
-          'La caméra/le micro ne sont pas disponibles dans ce contexte. Vérifie que tu utilises bien HTTPS.'
-      };
-
-      return `${name}: ${map[name] || 'Erreur inconnue lors de l’accès à la caméra ou au micro.'}`;
-    }
-
-
-    function showToast(message) {
-
-      clearTimeout(toastTimer);
-
-      toast.textContent = message;
-
-      toast.classList.add('show');
+      toast.classList.add(
+        'show'
+      );
 
       toastTimer =
         setTimeout(
-          () => toast.classList.remove('show'),
-          3200
+          () =>
+            toast.classList.remove(
+              'show'
+            ),
+          3500
         );
+
     }
 
 
-    function setStatus(text, online = false) {
+    function setStatus(
+      text,
+      online = false
+    ) {
 
-      statusText.textContent = text;
+      statusText.textContent =
+        text;
 
       statusDot.classList.toggle(
         'online',
         online
       );
+
     }
 
 
-    function setRoomCount(count) {
+    function setRoomCount(
+      count
+    ) {
 
       const safe =
         Math.max(
@@ -1006,25 +1197,22 @@
           )
         );
 
+
       roomCount.textContent =
         `• ${safe}/2`;
 
-      if (safe === 2) {
 
-        roomCount.style.color =
-          'var(--ok)';
-
-      } else {
-
-        roomCount.style.color =
-          '#d9dbea';
-
-      }
+      roomCount.style.color =
+        safe === 2
+          ? 'var(--ok)'
+          : '#d9dbea';
 
     }
 
 
-    function setRoomInUrl(room) {
+    function setRoomInUrl(
+      room
+    ) {
 
       const url =
         new URL(
@@ -1041,6 +1229,7 @@
         '',
         url
       );
+
     }
 
 
@@ -1051,12 +1240,17 @@
 
       let code = '';
 
-      for (let i = 0; i < 8; i++) {
+      for (
+        let i = 0;
+        i < 8;
+        i++
+      ) {
 
         code +=
           chars[
             Math.floor(
-              Math.random() * chars.length
+              Math.random() *
+              chars.length
             )
           ];
 
@@ -1071,15 +1265,20 @@
     }
 
 
-    function extractYouTubeId(url) {
+    function extractYouTubeId(
+      url
+    ) {
 
       try {
 
         const u =
           new URL(url);
 
+
         if (
-          u.hostname.includes('youtu.be')
+          u.hostname.includes(
+            'youtu.be'
+          )
         ) {
 
           return (
@@ -1089,29 +1288,47 @@
 
         }
 
+
         if (
-          u.hostname.includes('youtube.com')
+          u.hostname.includes(
+            'youtube.com'
+          )
         ) {
 
-          if (u.pathname === '/watch') {
+          if (
+            u.pathname ===
+            '/watch'
+          ) {
 
-            return u.searchParams.get('v');
+            return u.searchParams.get(
+              'v'
+            );
 
           }
 
+
           if (
-            u.pathname.startsWith('/shorts/')
+            u.pathname.startsWith(
+              '/shorts/'
+            )
           ) {
 
-            return u.pathname.split('/')[2];
+            return u.pathname.split(
+              '/'
+            )[2];
 
           }
 
+
           if (
-            u.pathname.startsWith('/embed/')
+            u.pathname.startsWith(
+              '/embed/'
+            )
           ) {
 
-            return u.pathname.split('/')[2];
+            return u.pathname.split(
+              '/'
+            )[2];
 
           }
 
@@ -1120,29 +1337,49 @@
       } catch (_) {}
 
       return null;
+
     }
 
 
-    function detectVideoType(url) {
+    function detectVideoType(
+      url
+    ) {
 
       const value =
-        String(url || '').trim();
+        String(
+          url || ''
+        ).trim();
 
-      if (extractYouTubeId(value)) {
+
+      if (
+        extractYouTubeId(value)
+      ) {
+
         return 'youtube';
+
       }
+
 
       try {
 
-        const pathname =
+        const parsed =
           new URL(
             value,
             window.location.href
-          ).pathname.toLowerCase();
+          );
+
+
+        const pathname =
+          parsed.pathname.toLowerCase();
+
 
         if (
-          pathname.endsWith('.m3u8') ||
-          /\.m3u8(?:$|[?#])/i.test(value)
+          pathname.endsWith(
+            '.m3u8'
+          ) ||
+          /\.m3u8(?:$|[?#])/i.test(
+            value
+          )
         ) {
 
           return 'hls';
@@ -1151,14 +1388,20 @@
 
       } catch (_) {}
 
+
       return 'direct';
+
     }
 
 
-    function formatTime(seconds) {
+    function formatTime(
+      seconds
+    ) {
 
       if (
-        !Number.isFinite(seconds) ||
+        !Number.isFinite(
+          seconds
+        ) ||
         seconds < 0
       ) {
 
@@ -1166,17 +1409,28 @@
 
       }
 
+
       const total =
-        Math.floor(seconds);
+        Math.floor(
+          seconds
+        );
+
 
       const mins =
-        Math.floor(total / 60);
+        Math.floor(
+          total / 60
+        );
+
 
       const secs =
         total % 60;
 
+
       const hours =
-        Math.floor(mins / 60);
+        Math.floor(
+          mins / 60
+        );
+
 
       if (hours > 0) {
 
@@ -1188,46 +1442,74 @@
 
       }
 
+
       return (
         `${String(mins).padStart(2, '0')}:` +
         `${String(secs).padStart(2, '0')}`
       );
+
     }
 
 
     function getSharedTime() {
 
       if (
-        sharedVideoType === 'direct' &&
+        sharedVideoType ===
+          'direct' &&
         sharedVideo
       ) {
 
         return (
-          sharedVideo.currentTime || 0
+          sharedVideo.currentTime ||
+          0
         );
 
       }
 
+
       if (
-        sharedVideoType === 'youtube' &&
+        sharedVideoType ===
+          'hls' &&
+        sharedVideo
+      ) {
+
+        return (
+          sharedVideo.currentTime ||
+          0
+        );
+
+      }
+
+
+      if (
+        sharedVideoType ===
+          'youtube' &&
         youtubePlayer &&
         youtubeReady
       ) {
 
         return (
-          youtubePlayer.getCurrentTime() || 0
+          youtubePlayer.getCurrentTime() ||
+          0
         );
 
       }
 
+
       return 0;
+
     }
 
 
     function isSharedPlaying() {
 
       if (
-        sharedVideoType === 'direct' &&
+        (
+          sharedVideoType ===
+            'direct' ||
+          sharedVideoType ===
+            'hls'
+        ) &&
         sharedVideo
       ) {
 
@@ -1235,20 +1517,24 @@
 
       }
 
+
       if (
-        sharedVideoType === 'youtube' &&
+        sharedVideoType ===
+          'youtube' &&
         youtubePlayer &&
         youtubeReady
       ) {
 
         return (
           youtubePlayer.getPlayerState() ===
-          1
+          YT.PlayerState.PLAYING
         );
 
       }
 
+
       return false;
+
     }
 
 
@@ -1257,8 +1543,12 @@
       const loaded =
         Boolean(
           sharedVideo ||
-          (youtubePlayer && youtubeReady)
+          (
+            youtubePlayer &&
+            youtubeReady
+          )
         );
+
 
       [
         clearVideoBtn,
@@ -1267,42 +1557,70 @@
         back10Btn,
         forward10Btn
       ].forEach(
-        el => el.disabled = !loaded
+        el =>
+          el.disabled = !loaded
       );
+
 
       if (!loaded) {
 
         timeLabel.textContent =
           '00:00 / 00:00';
 
-        videoProgress.value = 0;
+        videoProgress.value =
+          0;
 
         return;
+
       }
+
 
       const current =
         getSharedTime();
 
-      const duration =
-        sharedVideoType === 'direct'
-          ? (
-              Number.isFinite(
-                sharedVideo?.duration
-              )
-                ? sharedVideo.duration
-                : 0
-            )
-          : (
-              youtubePlayer &&
-              youtubeReady
-                ? youtubePlayer.getDuration() || 0
-                : 0
-            );
+
+      let duration = 0;
+
+
+      if (
+        (
+          sharedVideoType ===
+            'direct' ||
+          sharedVideoType ===
+            'hls'
+        ) &&
+        sharedVideo
+      ) {
+
+        duration =
+          Number.isFinite(
+            sharedVideo.duration
+          )
+            ? sharedVideo.duration
+            : 0;
+
+      }
+
+
+      if (
+        sharedVideoType ===
+          'youtube' &&
+        youtubePlayer &&
+        youtubeReady
+      ) {
+
+        duration =
+          youtubePlayer.getDuration() ||
+          0;
+
+      }
+
 
       videoProgress.max =
         duration > 0
           ? duration
           : 100;
+
 
       videoProgress.value =
         Math.min(
@@ -1310,8 +1628,10 @@
           duration || 100
         );
 
+
       timeLabel.textContent =
         `${formatTime(current)} / ${formatTime(duration)}`;
+
 
       playPauseBtn.textContent =
         isSharedPlaying()
@@ -1330,56 +1650,75 @@
         return;
       }
 
-      const payload = {
-
-        room: roomId,
-
-        action,
-
-        currentTime:
-          extra.currentTime ??
-          getSharedTime(),
-
-        playing:
-          extra.playing ??
-          isSharedPlaying(),
-
-        ...extra
-      };
 
       socket.emit(
         'video-command',
-        payload
+        {
+
+          room: roomId,
+
+          action,
+
+          currentTime:
+            extra.currentTime ??
+            getSharedTime(),
+
+          playing:
+            extra.playing ??
+            isSharedPlaying(),
+
+          ...extra
+
+        }
       );
 
     }
 
 
     function cleanupSharedVideo(
-      { resetKey = true } = {}
+      {
+        resetKey = true
+      } = {}
     ) {
 
-      applyingRemoteCommand = true;
+      applyingRemoteCommand =
+        true;
 
-      clearInterval(progressTimer);
 
-      progressTimer = null;
+      suppressVideoBroadcastUntil =
+        Date.now() + 1500;
+
+
+      clearInterval(
+        progressTimer
+      );
+
+      progressTimer =
+        null;
+
 
       if (hlsInstance) {
 
         try {
+
           hlsInstance.destroy();
+
         } catch (_) {}
 
-        hlsInstance = null;
+        hlsInstance =
+          null;
 
       }
+
 
       if (sharedVideo) {
 
         try {
+
           sharedVideo.pause();
+
         } catch (_) {}
+
 
         try {
 
@@ -1393,33 +1732,63 @@
 
       }
 
-      sharedVideo = null;
 
-      youtubePlayer = null;
-      youtubeReady = false;
+      sharedVideo =
+        null;
 
-      sharedVideoType = null;
 
-      pendingDirectState = null;
+      sharedVideoType =
+        null;
+
+
+      youtubePlayer =
+        null;
+
+      youtubeReady =
+        false;
+
+
+      pendingDirectState =
+        null;
+
 
       if (resetKey) {
-        lastAppliedVideoKey = '';
+
+        lastAppliedVideoKey =
+          '';
+
       }
 
-      sharedMedia.innerHTML = '';
+
+      sharedMedia.innerHTML =
+        '';
+
 
       sharedMedia.appendChild(
         watchEmpty
       );
 
+
       watchEmpty.style.display =
         'grid';
 
-      videoUrlInput.value = '';
+
+      videoUrlInput.value =
+        '';
+
 
       updateVideoControls();
 
-      applyingRemoteCommand = false;
+
+      setTimeout(
+        () => {
+
+          applyingRemoteCommand =
+            false;
+
+        },
+        50
+      );
 
     }
 
@@ -1430,15 +1799,23 @@
       shouldPlay = false
     ) {
 
-      youtubeReady = false;
+      youtubeReady =
+        false;
 
-      sharedMedia.innerHTML = '';
+
+      sharedMedia.innerHTML =
+        '';
+
 
       const host =
-        document.createElement('div');
+        document.createElement(
+          'div'
+        );
+
 
       host.id =
         'youtubePlayer';
+
 
       host.style.width =
         '100%';
@@ -1446,130 +1823,149 @@
       host.style.height =
         '100%';
 
-      sharedMedia.appendChild(host);
+
+      sharedMedia.appendChild(
+        host
+      );
 
 
-      const startPlayer = () => {
+      const startPlayer =
+        () => {
 
-        youtubePlayer =
-          new YT.Player(
-            'youtubePlayer',
-            {
+          youtubePlayer =
+            new YT.Player(
+              'youtubePlayer',
+              {
 
-              width: '100%',
+                width: '100%',
 
-              height: '100%',
+                height: '100%',
 
-              videoId,
+                videoId,
 
-              playerVars: {
+                playerVars: {
 
-                autoplay:
-                  shouldPlay
-                    ? 1
-                    : 0,
+                  autoplay:
+                    shouldPlay
+                      ? 1
+                      : 0,
 
-                controls: 1,
+                  controls: 1,
 
-                fs: 0,
+                  fs: 0,
 
-                rel: 0,
+                  rel: 0,
 
-                playsinline: 1,
+                  playsinline: 1,
 
-                start:
-                  Math.floor(
-                    startAt
-                  )
-
-              },
-
-              events: {
-
-                onReady: () => {
-
-                  youtubeReady = true;
-
-                  updateVideoControls();
-
-                  startProgressTimer();
-
-                  if (
-                    startAt > 0
-                  ) {
-
-                    youtubePlayer.seekTo(
-                      startAt,
-                      true
-                    );
-
-                  }
-
-                  if (shouldPlay) {
-
-                    youtubePlayer.playVideo();
-
-                  }
+                  start:
+                    Math.floor(
+                      startAt
+                    )
 
                 },
 
+                events: {
 
-                onStateChange:
-                  (event) => {
+                  onReady: () => {
 
-                    if (
-                      applyingRemoteCommand
-                    ) {
+                    youtubeReady =
+                      true;
 
-                      return;
-
-                    }
-
-                    if (
-                      event.data ===
-                      YT.PlayerState.PLAYING
-                    ) {
-
-                      sendVideoCommand(
-                        'play',
-                        {
-                          currentTime:
-                            youtubePlayer.getCurrentTime(),
-
-                          playing: true
-                        }
-                      );
-
-                    }
-
-
-                    if (
-                      event.data ===
-                      YT.PlayerState.PAUSED
-                    ) {
-
-                      sendVideoCommand(
-                        'pause',
-                        {
-                          currentTime:
-                            youtubePlayer.getCurrentTime(),
-
-                          playing: false
-                        }
-                      );
-
-                    }
 
                     updateVideoControls();
 
-                  }
+
+                    startProgressTimer();
+
+
+                    if (
+                      startAt > 0
+                    ) {
+
+                      youtubePlayer.seekTo(
+                        startAt,
+                        true
+                      );
+
+                    }
+
+
+                    if (
+                      shouldPlay
+                    ) {
+
+                      youtubePlayer.playVideo();
+
+                    }
+
+                  },
+
+
+                  onStateChange:
+                    (event) => {
+
+                      if (
+                        applyingRemoteCommand
+                      ) {
+
+                        return;
+
+                      }
+
+
+                      if (
+                        event.data ===
+                        YT.PlayerState.PLAYING
+                      ) {
+
+                        sendVideoCommand(
+                          'play',
+                          {
+
+                            currentTime:
+                              youtubePlayer.getCurrentTime(),
+
+                            playing:
+                              true
+
+                          }
+                        );
+
+                      }
+
+
+                      if (
+                        event.data ===
+                        YT.PlayerState.PAUSED
+                      ) {
+
+                        sendVideoCommand(
+                          'pause',
+                          {
+
+                            currentTime:
+                              youtubePlayer.getCurrentTime(),
+
+                            playing:
+                              false
+
+                          }
+                        );
+
+                      }
+
+
+                      updateVideoControls();
+
+                    }
+
+                }
 
               }
+            );
 
-            }
-          );
-
-      };
+        };
 
 
       if (
@@ -1594,6 +1990,7 @@
       clearInterval(
         progressTimer
       );
+
 
       progressTimer =
         setInterval(
@@ -1620,68 +2017,76 @@
       }
 
 
-      const apply = () => {
+      const apply =
+        () => {
 
-        if (
-          !video ||
-          video !== sharedVideo
-        ) {
+          if (
+            !video ||
+            video !== sharedVideo
+          ) {
 
-          return;
+            return;
 
-        }
-
-        const time =
-          Number(startAt) || 0;
+          }
 
 
-        if (
-          Number.isFinite(
-            video.duration
-          ) &&
-          video.duration > 0
-        ) {
-
-          try {
-
-            video.currentTime =
-              Math.min(
-                time,
-                video.duration
-              );
-
-          } catch (_) {}
-
-        } else if (time > 0) {
-
-          try {
-
-            video.currentTime =
-              time;
-
-          } catch (_) {}
-
-        }
+          const time =
+            Number(
+              startAt
+            ) || 0;
 
 
-        updateVideoControls();
+          if (
+            Number.isFinite(
+              video.duration
+            ) &&
+            video.duration > 0
+          ) {
+
+            try {
+
+              video.currentTime =
+                Math.min(
+                  time,
+                  video.duration
+                );
+
+            } catch (_) {}
+
+          } else if (
+            time > 0
+          ) {
+
+            try {
+
+              video.currentTime =
+                time;
+
+            } catch (_) {}
+
+          }
 
 
-        if (shouldPlay) {
+          updateVideoControls();
 
-          video.play().catch(
-            () => {
 
-              showToast(
-                'La vidéo est chargée. Appuie sur ▶ Lecture si le navigateur bloque la lecture.'
-              );
+          if (
+            shouldPlay
+          ) {
 
-            }
-          );
+            video.play().catch(
+              () => {
 
-        }
+                showToast(
+                  'La vidéo est chargée. Appuie sur ▶ Lecture.'
+                );
 
-      };
+              }
+            );
+
+          }
+
+        };
 
 
       if (
@@ -1695,10 +2100,14 @@
         pendingDirectState = {
 
           currentTime:
-            Number(startAt) || 0,
+            Number(
+              startAt
+            ) || 0,
 
           shouldPlay:
-            Boolean(shouldPlay)
+            Boolean(
+              shouldPlay
+            )
 
         };
 
@@ -1715,7 +2124,10 @@
     ) {
 
       const cleanUrl =
-        String(url || '').trim();
+        String(
+          url || ''
+        ).trim();
+
 
       if (!cleanUrl) {
         return;
@@ -1727,19 +2139,20 @@
           cleanUrl
         );
 
+
       const nextType =
         detectedType ||
         type ||
         'direct';
+
 
       const videoKey =
         `${nextType}|${cleanUrl}`;
 
 
       /*
-       * Même vidéo déjà chargée :
-       * on ne détruit PAS le lecteur, on resynchronise
-       * juste sa position/état de lecture.
+       * Si c'est exactement la même vidéo,
+       * on ne reconstruit PAS le lecteur.
        */
       if (
         videoKey ===
@@ -1748,112 +2161,170 @@
           nextType
       ) {
 
-        applyingRemoteCommand = true;
+        suppressVideoBroadcastUntil =
+          Date.now() + 1200;
 
 
         if (
           sharedVideoType ===
-          'youtube' &&
-          youtubePlayer
+            'youtube' &&
+          youtubePlayer &&
+          youtubeReady
         ) {
 
-          if (youtubeReady) {
-
-            const current =
-              youtubePlayer.getCurrentTime() || 0;
-
-
-            if (
-              Math.abs(
-                current -
-                Number(startAt || 0)
-              ) > 1.5
-            ) {
-
-              youtubePlayer.seekTo(
-                Number(startAt || 0),
-                true
-              );
-
-            }
+          const current =
+            youtubePlayer.getCurrentTime() ||
+            0;
 
 
-            if (
-              shouldPlay &&
-              youtubePlayer.getPlayerState() !==
-                YT.PlayerState.PLAYING
-            ) {
+          if (
+            Math.abs(
+              current -
+              Number(
+                startAt || 0
+              )
+            ) > 1.5
+          ) {
 
-              youtubePlayer.playVideo();
+            applyingRemoteCommand =
+              true;
 
-            }
+
+            youtubePlayer.seekTo(
+              Number(
+                startAt || 0
+              ),
+              true
+            );
 
 
-            if (
-              !shouldPlay &&
-              youtubePlayer.getPlayerState() ===
-                YT.PlayerState.PLAYING
-            ) {
-
-              youtubePlayer.pauseVideo();
-
-            }
+            setTimeout(
+              () => {
+                applyingRemoteCommand =
+                  false;
+              },
+              100
+            );
 
           }
 
-          applyingRemoteCommand = false;
+
+          applyingRemoteCommand =
+            true;
+
+
+          if (
+            shouldPlay &&
+            youtubePlayer.getPlayerState() !==
+              YT.PlayerState.PLAYING
+          ) {
+
+            youtubePlayer.playVideo();
+
+          }
+
+
+          if (
+            !shouldPlay &&
+            youtubePlayer.getPlayerState() ===
+              YT.PlayerState.PLAYING
+          ) {
+
+            youtubePlayer.pauseVideo();
+
+          }
+
+
+          setTimeout(
+            () => {
+              applyingRemoteCommand =
+                false;
+            },
+            150
+          );
+
 
           return;
+
         }
 
 
         if (
-          sharedVideoType ===
-            'direct' &&
+          (
+            sharedVideoType ===
+              'direct' ||
+            sharedVideoType ===
+              'hls'
+          ) &&
           sharedVideo
         ) {
 
+          applyingRemoteCommand =
+            true;
+
+
           applyDirectVideoState(
             sharedVideo,
-            Number(startAt || 0),
-            Boolean(shouldPlay)
+            Number(
+              startAt || 0
+            ),
+            Boolean(
+              shouldPlay
+            )
           );
 
-          applyingRemoteCommand = false;
 
-          updateVideoControls();
+          setTimeout(
+            () => {
+
+              applyingRemoteCommand =
+                false;
+
+              updateVideoControls();
+
+            },
+            150
+          );
+
 
           return;
-        }
 
-        applyingRemoteCommand = false;
+        }
 
       }
 
 
       /*
-       * Nouveau film.
+       * Nouvelle vidéo.
        */
       cleanupSharedVideo({
         resetKey: false
       });
 
 
-      applyingRemoteCommand = true;
-
       lastAppliedVideoKey =
         videoKey;
+
 
       sharedVideoType =
         nextType;
 
+
       videoUrlInput.value =
         cleanUrl;
+
 
       watchEmpty.style.display =
         'none';
 
 
+      suppressVideoBroadcastUntil =
+        Date.now() + 1500;
+
+
+      /*
+       * YOUTUBE
+       */
       if (
         sharedVideoType ===
         'youtube'
@@ -1871,9 +2342,9 @@
             'Lien YouTube invalide.'
           );
 
-          applyingRemoteCommand = false;
 
           cleanupSharedVideo();
+
 
           return;
 
@@ -1886,32 +2357,18 @@
           shouldPlay
         );
 
+
         updateVideoControls();
 
-        applyingRemoteCommand = false;
 
         return;
+
       }
 
 
       /*
-       * Lecteur vidéo direct :
-       * MP4 / WebM / OGG
-       *
-       * IMPORTANT :
-       * On ne force PAS crossOrigin="anonymous".
-       * Certains serveurs MP4 refusent cette lecture.
-       *
-       * IMPORTANT (sync) :
-       * Cet élément vidéo n'a AUCUN contrôle natif
-       * (video.controls reste à false). Toutes les actions
-       * de lecture/pause/déplacement passent uniquement par
-       * les boutons de l'application, qui appellent déjà
-       * sendVideoCommand() explicitement. On n'attache donc
-       * PAS d'écouteurs "play"/"pause"/"seeking" qui
-       * rebroadcasteraient une deuxième fois la même action
-       * (c'était la cause des doublons / de la désynchro
-       * en cas de lecture lente ou de mise en mémoire tampon).
+       * VIDEO DIRECTE :
+       * MP4 / WebM / OGG / HLS
        */
       const video =
         document.createElement(
@@ -1919,16 +2376,21 @@
         );
 
 
-      video.controls = false;
+      video.controls =
+        false;
 
-      video.playsInline = true;
+      video.playsInline =
+        true;
 
-      video.preload = 'metadata';
+      video.preload =
+        'auto';
+
 
       video.setAttribute(
         'playsinline',
         ''
       );
+
 
       video.setAttribute(
         'webkit-playsinline',
@@ -1936,11 +2398,22 @@
       );
 
 
-      sharedMedia.innerHTML = '';
+      /*
+       * NE PAS mettre :
+       * video.crossOrigin = "anonymous"
+       *
+       * Certains serveurs MP4 le refusent.
+       */
+
+
+      sharedMedia.innerHTML =
+        '';
+
 
       sharedMedia.appendChild(
         video
       );
+
 
       sharedVideo =
         video;
@@ -1949,10 +2422,14 @@
       pendingDirectState = {
 
         currentTime:
-          Number(startAt) || 0,
+          Number(
+            startAt
+          ) || 0,
 
         shouldPlay:
-          Boolean(shouldPlay)
+          Boolean(
+            shouldPlay
+          )
 
       };
 
@@ -1969,11 +2446,17 @@
 
           }
 
+
           const state =
             pendingDirectState;
 
+
           pendingDirectState =
             null;
+
+
+          applyingRemoteCommand =
+            true;
 
 
           const time =
@@ -2013,7 +2496,7 @@
               () => {
 
                 showToast(
-                  'La vidéo est chargée. Appuie sur ▶ Lecture si le navigateur bloque la lecture automatique.'
+                  'La vidéo est chargée. Appuie sur ▶ Lecture si nécessaire.'
                 );
 
               }
@@ -2021,11 +2504,30 @@
 
           }
 
+
+          setTimeout(
+            () => {
+
+              applyingRemoteCommand =
+                false;
+
+              updateVideoControls();
+
+            },
+            150
+          );
+
         };
 
 
       video.addEventListener(
         'loadedmetadata',
+        applyPendingState
+      );
+
+
+      video.addEventListener(
+        'loadeddata',
         applyPendingState
       );
 
@@ -2050,14 +2552,150 @@
 
 
       video.addEventListener(
+        'waiting',
+        () => {
+
+          if (
+            sharedVideoType ===
+            'hls'
+          ) {
+
+            console.log(
+              'HLS: buffering...'
+            );
+
+          }
+
+        }
+      );
+
+
+      video.addEventListener(
+        'playing',
+        () => {
+
+          updateVideoControls();
+
+        }
+      );
+
+
+      video.addEventListener(
         'play',
-        updateVideoControls
+        () => {
+
+          if (
+            !applyingRemoteCommand &&
+            Date.now() >
+              suppressVideoBroadcastUntil
+          ) {
+
+            sendVideoCommand(
+              'play',
+              {
+
+                currentTime:
+                  video.currentTime,
+
+                playing:
+                  true
+
+              }
+            );
+
+          }
+
+
+          updateVideoControls();
+
+        }
       );
 
 
       video.addEventListener(
         'pause',
-        updateVideoControls
+        () => {
+
+          if (
+            !applyingRemoteCommand &&
+            Date.now() >
+              suppressVideoBroadcastUntil
+          ) {
+
+            sendVideoCommand(
+              'pause',
+              {
+
+                currentTime:
+                  video.currentTime,
+
+                playing:
+                  false
+
+              }
+            );
+
+          }
+
+
+          updateVideoControls();
+
+        }
+      );
+
+
+      video.addEventListener(
+        'seeking',
+        () => {
+
+          if (
+            !applyingRemoteCommand &&
+            Date.now() >
+              suppressVideoBroadcastUntil
+          ) {
+
+            sendVideoCommand(
+              'seek',
+              {
+
+                currentTime:
+                  video.currentTime
+
+              }
+            );
+
+          }
+
+        }
+      );
+
+
+      video.addEventListener(
+        'seeked',
+        () => {
+
+          if (
+            !applyingRemoteCommand &&
+            Date.now() >
+              suppressVideoBroadcastUntil
+          ) {
+
+            sendVideoCommand(
+              'seek',
+              {
+
+                currentTime:
+                  video.currentTime
+
+              }
+            );
+
+          }
+
+
+          updateVideoControls();
+
+        }
       );
 
 
@@ -2068,18 +2706,33 @@
           const code =
             video.error?.code;
 
-          const details =
-            code
-              ? ` (code ${code})`
-              : '';
 
-          showToast(
-            `Impossible de lire la vidéo${details}. Vérifie que le lien MP4 est accessible directement.`
-          );
+          const message = {
+
+            1:
+              'Lecture interrompue.',
+
+            2:
+              'Erreur réseau pendant le chargement.',
+
+            3:
+              'Le navigateur ne peut pas décoder cette vidéo.',
+
+            4:
+              'Format vidéo non pris en charge ou URL inaccessible.'
+
+          }[code] ||
+          'Erreur vidéo inconnue.';
+
 
           console.error(
             'Video error:',
             video.error
+          );
+
+
+          showToast(
+            `🎬 ${message}`
           );
 
         }
@@ -2094,6 +2747,15 @@
         'hls'
       ) {
 
+        console.log(
+          'Chargement HLS:',
+          cleanUrl
+        );
+
+
+        /*
+         * HLS.js disponible
+         */
         if (
           window.Hls &&
           Hls.isSupported()
@@ -2102,9 +2764,35 @@
           hlsInstance =
             new Hls({
 
-              enableWorker: true,
+              enableWorker:
+                true,
 
-              lowLatencyMode: false
+              lowLatencyMode:
+                false,
+
+              backBufferLength:
+                90,
+
+              maxBufferLength:
+                30,
+
+              maxMaxBufferLength:
+                60,
+
+              startLevel:
+                -1,
+
+              xhrSetup:
+                (xhr) => {
+
+                  /*
+                   * On demande explicitement
+                   * une requête sans credentials.
+                   */
+                  xhr.withCredentials =
+                    false;
+
+                }
 
             });
 
@@ -2113,8 +2801,42 @@
             Hls.Events.MEDIA_ATTACHED,
             () => {
 
-              hlsInstance.loadSource(
-                cleanUrl
+              console.log(
+                'HLS media attached'
+              );
+
+
+              try {
+
+                hlsInstance.loadSource(
+                  cleanUrl
+                );
+
+              } catch (error) {
+
+                console.error(
+                  'HLS loadSource error:',
+                  error
+                );
+
+
+                showToast(
+                  'Impossible de charger le flux HLS.'
+                );
+
+              }
+
+            }
+          );
+
+
+          hlsInstance.on(
+            Hls.Events.MANIFEST_LOADING,
+            (_event, data) => {
+
+              console.log(
+                'HLS manifest loading:',
+                data?.url
               );
 
             }
@@ -2123,6 +2845,25 @@
 
           hlsInstance.on(
             Hls.Events.MANIFEST_PARSED,
+            (_event, data) => {
+
+              console.log(
+                'HLS manifest loaded',
+                data
+              );
+
+
+              updateVideoControls();
+
+
+              applyPendingState();
+
+            }
+          );
+
+
+          hlsInstance.on(
+            Hls.Events.LEVEL_LOADED,
             () => {
 
               applyPendingState();
@@ -2135,52 +2876,100 @@
             Hls.Events.ERROR,
             (_event, data) => {
 
-              console.warn(
+              console.error(
                 'HLS error:',
                 data
               );
 
 
               if (
-                data?.fatal
+                !data?.fatal
               ) {
 
-                let message =
-                  'Erreur HLS.';
-
-
-                if (
-                  data.type ===
-                  Hls.ErrorTypes.NETWORK_ERROR
-                ) {
-
-                  message =
-                    'Le flux HLS ne répond pas ou son lien a expiré.';
-
-                } else if (
-                  data.type ===
-                  Hls.ErrorTypes.MEDIA_ERROR
-                ) {
-
-                  message =
-                    'Le navigateur n’arrive pas à décoder ce flux HLS.';
-
-                } else if (
-                  data.details ===
-                  'manifestLoadError'
-                ) {
-
-                  message =
-                    'Impossible de charger le fichier .m3u8. Le serveur peut bloquer CORS.';
-
-                }
-
-
-                showToast(
-                  message
-                );
+                return;
 
               }
+
+
+              let message =
+                'Erreur HLS.';
+
+
+              if (
+                data.type ===
+                Hls.ErrorTypes.NETWORK_ERROR
+              ) {
+
+                message =
+                  'Le flux HLS ne répond pas. Le lien peut être expiré ou le serveur peut bloquer les requêtes depuis ton site.';
+
+
+                /*
+                 * HLS.js peut récupérer
+                 * certaines erreurs réseau
+                 * en rechargeant le manifest.
+                 */
+                try {
+
+                  hlsInstance.startLoad();
+
+                } catch (_) {}
+
+
+              } else if (
+                data.type ===
+                Hls.ErrorTypes.MEDIA_ERROR
+              ) {
+
+                message =
+                  'Le navigateur n’arrive pas à décoder ce flux HLS.';
+
+
+                try {
+
+                  hlsInstance.recoverMediaError();
+
+                } catch (_) {}
+
+
+              } else if (
+                data.details ===
+                Hls.ErrorDetails.MANIFEST_LOAD_ERROR
+              ) {
+
+                message =
+                  'Impossible de charger le fichier .m3u8. Vérifie que le lien est encore valide et que le serveur autorise CORS.';
+
+              } else if (
+                data.details ===
+                Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT
+              ) {
+
+                message =
+                  'Le serveur HLS met trop de temps à répondre.';
+
+              } else if (
+                data.details ===
+                Hls.ErrorDetails.LEVEL_LOAD_ERROR
+              ) {
+
+                message =
+                  'Impossible de charger une partie du flux HLS.';
+
+              } else if (
+                data.details ===
+                Hls.ErrorDetails.FRAG_LOAD_ERROR
+              ) {
+
+                message =
+                  'Impossible de charger une partie de la vidéo HLS. Le lien peut être expiré.';
+
+              }
+
+
+              showToast(
+                message
+              );
 
             }
           );
@@ -2198,10 +2987,23 @@
         ) {
 
           /*
-           * HLS natif Safari / certains mobiles.
+           * HLS natif :
+           * Safari / certains appareils.
            */
+          console.log(
+            'Utilisation HLS natif'
+          );
+
+
           video.src =
             cleanUrl;
+
+
+          video.addEventListener(
+            'loadedmetadata',
+            applyPendingState,
+            { once: true }
+          );
 
 
         } else {
@@ -2210,11 +3012,12 @@
             'Ce navigateur ne prend pas en charge HLS (.m3u8).'
           );
 
-          applyingRemoteCommand = false;
 
           cleanupSharedVideo();
 
+
           return;
+
         }
 
 
@@ -2233,235 +3036,18 @@
 
       updateVideoControls();
 
-      applyingRemoteCommand = false;
-
     }
 
 
-    function applyLocalStream(
-      stream
-    ) {
-
-      localStream =
-        stream;
-
-      localVideo.srcObject =
-        stream;
-
-      localVideo.muted =
-        true;
-
-      localVideo.playsInline =
-        true;
-
-      localVideo.autoplay =
-        true;
-
-      localVideo.play().catch(
-        () => {}
-      );
-
-      localEmpty.style.display =
-        'none';
-
-
-      micBtn.disabled =
-        stream.getAudioTracks().length === 0;
-
-      camBtn.disabled =
-        stream.getVideoTracks().length === 0;
-
-    }
-
-
-    async function requestMediaRobust() {
-
-      try {
-
-        return await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true
-        });
-
-      } catch (firstError) {
-
-        const firstName =
-          firstError?.name ||
-          'UnknownError';
-
-        console.warn(
-          'Combined camera+micro request failed:',
-          firstError
-        );
-
-
-        let videoStream =
-          null;
-
-        let audioStream =
-          null;
-
-
-        try {
-
-          videoStream =
-            await navigator.mediaDevices.getUserMedia({
-              video: true
-            });
-
-        } catch (videoError) {
-
-          console.warn(
-            'Video-only request failed:',
-            videoError
-          );
-
-        }
-
-
-        try {
-
-          audioStream =
-            await navigator.mediaDevices.getUserMedia({
-              audio: true
-            });
-
-        } catch (audioError) {
-
-          console.warn(
-            'Audio-only request failed:',
-            audioError
-          );
-
-        }
-
-
-        if (
-          videoStream ||
-          audioStream
-        ) {
-
-          const tracks = [
-
-            ...(
-              videoStream
-                ? videoStream.getVideoTracks()
-                : []
-            ),
-
-            ...(
-              audioStream
-                ? audioStream.getAudioTracks()
-                : []
-            )
-
-          ];
-
-
-          videoStream?.getTracks()
-            .forEach(
-              t => {
-
-                if (
-                  !tracks.includes(t)
-                ) {
-
-                  t.stop();
-
-                }
-
-              }
-            );
-
-
-          audioStream?.getTracks()
-            .forEach(
-              t => {
-
-                if (
-                  !tracks.includes(t)
-                ) {
-
-                  t.stop();
-
-                }
-
-              }
-            );
-
-
-          if (
-            tracks.length
-          ) {
-
-            return new MediaStream(
-              tracks
-            );
-
-          }
-
-        }
-
-
-        firstError.__combinedFailure =
-          firstName;
-
-        throw firstError;
-
-      }
-
-    }
-
-
-    async function prepareMedia() {
-
-      if (
-        localStream &&
-        localStream
-          .getTracks()
-          .some(
-            track =>
-              track.readyState ===
-              'live'
-          )
-      ) {
-
-        applyLocalStream(
-          localStream
-        );
-
-        return true;
-      }
-
-
-      if (localStream) {
-
-        localStream
-          .getTracks()
-          .forEach(
-            track => track.stop()
-          );
-
-        localStream = null;
-
-      }
-
-
-      mediaError.textContent =
-        '';
-
+    async function requestMedia() {
 
       if (
         !window.isSecureContext
       ) {
 
-        mediaError.textContent =
-          'Cette page n’est pas sécurisée. Ouvre le lien en HTTPS, pas en HTTP.';
-
         showToast(
-          'La caméra et le micro nécessitent HTTPS.'
+          'HTTPS est nécessaire pour la caméra et le micro.'
         );
-
 
         return false;
 
@@ -2469,16 +3055,14 @@
 
 
       if (
-        !navigator.mediaDevices?.getUserMedia
+        !navigator
+          .mediaDevices
+          ?.getUserMedia
       ) {
 
-        mediaError.textContent =
-          'getUserMedia n’est pas disponible dans ce navigateur/contexte.';
-
         showToast(
-          'Caméra/micro indisponibles dans ce contexte.'
+          'La caméra et le micro ne sont pas disponibles dans ce navigateur.'
         );
-
 
         return false;
 
@@ -2488,113 +3072,99 @@
       try {
 
         localStream =
-          await requestMediaRobust();
+          await navigator
+            .mediaDevices
+            .getUserMedia({
+
+              video: true,
+
+              audio: true
+
+            });
 
 
-        applyLocalStream(
-          localStream
+        localVideo.srcObject =
+          localStream;
+
+
+        localVideo.muted =
+          true;
+
+
+        localVideo.playsInline =
+          true;
+
+
+        localVideo.autoplay =
+          true;
+
+
+        localVideo.play().catch(
+          () => {}
         );
+
+
+        localEmpty.style.display =
+          'none';
+
+
+        micBtn.disabled =
+          localStream
+            .getAudioTracks()
+            .length === 0;
+
+
+        camBtn.disabled =
+          localStream
+            .getVideoTracks()
+            .length === 0;
 
 
         return true;
 
+
       } catch (error) {
 
         console.error(
-          'Camera/micro final error:',
+          'Camera/micro error:',
           error
         );
 
 
-        localStream?.getTracks()
-          .forEach(
-            track => track.stop()
-          );
-
-
-        localStream = null;
-
-        localVideo.srcObject =
-          null;
-
-        localEmpty.style.display =
-          'grid';
-
-
-        micBtn.disabled =
-          true;
-
-        camBtn.disabled =
-          true;
-
-
-        const deviceInfo =
-          await (
-            async () => {
-
-              try {
-
-                const devices =
-                  await navigator
-                    .mediaDevices
-                    .enumerateDevices();
-
-
-                const cams =
-                  devices.filter(
-                    d =>
-                      d.kind ===
-                      'videoinput'
-                  ).length;
-
-
-                const mics =
-                  devices.filter(
-                    d =>
-                      d.kind ===
-                      'audioinput'
-                  ).length;
-
-
-                return (
-                  ` Périphériques détectés : ${cams} caméra(s), ${mics} micro(s).`
-                );
-
-              } catch (_) {
-
-                return '';
-
-              }
-
-            }
-          )();
-
-
-        const details =
-          errorText(error) +
-          deviceInfo;
-
-
-        mediaError.textContent =
-          details;
+        let message =
+          'Impossible d’utiliser la caméra et le micro.';
 
 
         if (
           error?.name ===
-            'AbortError' ||
-          error?.name ===
-            'NotReadableError'
+          'NotAllowedError'
         ) {
 
-          showToast(
-            'Le périphérique est probablement occupé. Ferme les autres applications qui utilisent la caméra/micro, puis réessaie.'
-          );
+          message =
+            'Brave bloque l’accès à la caméra ou au micro. Autorise-les pour streamabl.onrender.com.';
 
-        } else {
+        } else if (
+          error?.name ===
+          'NotFoundError'
+        ) {
 
-          showToast(details);
+          message =
+            'Aucune caméra ou aucun micro n’a été trouvé.';
+
+        } else if (
+          error?.name ===
+          'NotReadableError'
+        ) {
+
+          message =
+            'La caméra ou le micro est déjà utilisé par une autre application.';
 
         }
+
+
+        showToast(
+          message
+        );
 
 
         return false;
@@ -2606,8 +3176,12 @@
 
     function createPeerConnection() {
 
-      if (peerConnection) {
+      if (
+        peerConnection
+      ) {
+
         return peerConnection;
+
       }
 
 
@@ -2617,7 +3191,8 @@
         );
 
 
-      localStream?.getTracks()
+      localStream
+        ?.getTracks()
         .forEach(
           track => {
 
@@ -2668,11 +3243,14 @@
           remoteVideo.srcObject =
             remoteStream;
 
+
           remoteVideo.muted =
             false;
 
+
           remoteVideo.volume =
             1;
+
 
           remoteEmpty.style.display =
             'none';
@@ -2680,28 +3258,32 @@
 
           enableRemoteAudioBtn
             .classList
-            .add('show');
+            .add(
+              'show'
+            );
 
 
           try {
 
             await remoteVideo.play();
 
+
             enableRemoteAudioBtn
               .classList
-              .remove('show');
-
+              .remove(
+                'show'
+              );
 
           } catch (error) {
 
             console.warn(
-              'Remote media autoplay blocked:',
+              'Remote autoplay blocked:',
               error
             );
 
 
             showToast(
-              'La caméra est connectée. Appuie sur 🔊 Activer le son pour démarrer l’audio.'
+              'La caméra est connectée. Appuie sur 🔊 Activer le son.'
             );
 
           }
@@ -2710,7 +3292,7 @@
 
 
       peerConnection.onicecandidate =
-        (event) => {
+        event => {
 
           if (
             event.candidate
@@ -2720,7 +3302,8 @@
               'signal',
               {
 
-                room: roomId,
+                room:
+                  roomId,
 
                 data: {
 
@@ -2748,7 +3331,7 @@
 
 
           console.log(
-            'WebRTC connectionState:',
+            'WebRTC:',
             state
           );
 
@@ -2765,7 +3348,7 @@
 
 
             showToast(
-              'Caméra et micro de ta copine connectés ❤️'
+              'Caméra et micro connectés ❤️'
             );
 
           }
@@ -2806,14 +3389,13 @@
 
 
             showToast(
-              'WebRTC n’arrive pas à relier les deux téléphones. Un serveur TURN est probablement nécessaire sur ce réseau.'
+              'WebRTC n’arrive pas à relier les téléphones.'
             );
 
 
             try {
 
-              peerConnection
-                .restartIce();
+              peerConnection.restartIce();
 
             } catch (_) {}
 
@@ -2823,7 +3405,9 @@
             );
 
 
-            if (isInitiator) {
+            if (
+              isInitiator
+            ) {
 
               renegotiationTimer =
                 setTimeout(
@@ -2847,11 +3431,12 @@
         () => {
 
           const state =
-            peerConnection.iceConnectionState;
+            peerConnection
+              .iceConnectionState;
 
 
           console.log(
-            'ICE state:',
+            'ICE:',
             state
           );
 
@@ -2862,15 +3447,17 @@
           ) {
 
             setStatus(
-              'Recherche de connexion entre les téléphones…'
+              'Recherche de connexion…'
             );
 
           }
 
 
           if (
-            state === 'connected' ||
-            state === 'completed'
+            state ===
+              'connected' ||
+            state ===
+              'completed'
           ) {
 
             setStatus(
@@ -2882,11 +3469,12 @@
 
 
           if (
-            state === 'failed'
+            state ===
+            'failed'
           ) {
 
             showToast(
-              'ICE a échoué. Sans TURN, certains réseaux mobiles/routeurs peuvent bloquer la connexion.'
+              'ICE a échoué. Vérifie le serveur TURN.'
             );
 
           }
@@ -2926,7 +3514,8 @@
         'signal',
         {
 
-          room: roomId,
+          room:
+            roomId,
 
           data: {
 
@@ -2948,8 +3537,12 @@
       pc
     ) {
 
-      if (!pc.remoteDescription) {
+      if (
+        !pc.remoteDescription
+      ) {
+
         return;
+
       }
 
 
@@ -3021,7 +3614,8 @@
             'signal',
             {
 
-              room: roomId,
+              room:
+                roomId,
 
               data: {
 
@@ -3085,7 +3679,7 @@
 
 
         showToast(
-          'Erreur de connexion vidéo. Réessaie de rejoindre le salon.'
+          'Erreur de connexion vidéo.'
         );
 
       }
@@ -3099,7 +3693,9 @@
         [];
 
 
-      if (peerConnection) {
+      if (
+        peerConnection
+      ) {
 
         peerConnection.ontrack =
           null;
@@ -3118,15 +3714,21 @@
       remoteVideo.srcObject =
         null;
 
+
       remoteStream =
         null;
+
 
       remoteVideo.muted =
         false;
 
+
       enableRemoteAudioBtn
         .classList
-        .remove('show');
+        .remove(
+          'show'
+        );
+
 
       remoteEmpty.style.display =
         'grid';
@@ -3136,7 +3738,8 @@
 
     function stopMedia() {
 
-      localStream?.getTracks()
+      localStream
+        ?.getTracks()
         .forEach(
           track =>
             track.stop()
@@ -3146,8 +3749,10 @@
       localStream =
         null;
 
+
       localVideo.srcObject =
         null;
+
 
       localEmpty.style.display =
         'grid';
@@ -3165,41 +3770,39 @@
 
       if (!room) {
 
-        return showToast(
+        showToast(
           'Entre un code de salon.'
         );
 
-      }
-
-
-      if (joined) {
-
-        return showToast(
-          'Tu es déjà dans un salon.'
-        );
+        return;
 
       }
 
 
       if (
-        !navigator
-          .mediaDevices
-          ?.getUserMedia
+        joined
       ) {
 
-        return showToast(
-          'La caméra nécessite HTTPS ou localhost.'
+        showToast(
+          'Tu es déjà dans un salon.'
         );
+
+        return;
 
       }
 
 
+      /*
+       * Caméra + micro automatiques
+       */
       const mediaOk =
-        await prepareMedia();
+        await requestMedia();
 
 
       if (!mediaOk) {
+
         return;
+
       }
 
 
@@ -3211,7 +3814,7 @@
       socket.emit(
         'join-room',
         room,
-        (response) => {
+        response => {
 
           if (
             !response?.ok
@@ -3229,6 +3832,7 @@
 
 
             return;
+
           }
 
 
@@ -3241,7 +3845,8 @@
 
 
           setRoomCount(
-            response.count || 1
+            response.count ||
+            1
           );
 
 
@@ -3286,9 +3891,7 @@
 
 
           /*
-           * Un seul appel : l'état vidéo de la room
-           * (s'il y en a un) est redemandé au serveur
-           * une fois qu'on a rejoint.
+           * Une seule demande d'état vidéo.
            */
           socket.emit(
             'request-video-state'
@@ -3296,7 +3899,7 @@
 
 
           showToast(
-            'Salon prêt. Partage le lien avec elle ❤️'
+            'Salon prêt ❤️'
           );
 
         }
@@ -3307,7 +3910,9 @@
 
     function leaveRoom() {
 
-      if (joined) {
+      if (
+        joined
+      ) {
 
         socket.emit(
           'leave-room'
@@ -3319,11 +3924,13 @@
       joined =
         false;
 
+
       isInitiator =
         false;
 
 
       resetPeer();
+
 
       stopMedia();
 
@@ -3335,20 +3942,26 @@
       copyBtn.disabled =
         true;
 
+
       joinBtn.disabled =
         false;
+
 
       createBtn.disabled =
         false;
 
+
       hangupBtn.disabled =
         true;
+
 
       micBtn.disabled =
         true;
 
+
       camBtn.disabled =
         true;
+
 
       loadVideoBtn.disabled =
         true;
@@ -3382,6 +3995,7 @@
           remoteVideo.muted =
             false;
 
+
           remoteVideo.volume =
             1;
 
@@ -3391,7 +4005,9 @@
 
           enableRemoteAudioBtn
             .classList
-            .remove('show');
+            .remove(
+              'show'
+            );
 
 
           showToast(
@@ -3402,13 +4018,12 @@
         } catch (error) {
 
           console.error(
-            'Remote audio activation failed:',
             error
           );
 
 
           showToast(
-            'Impossible d’activer le son. Vérifie le volume et le mode silencieux du téléphone.'
+            'Impossible d’activer le son.'
           );
 
         }
@@ -3456,7 +4071,7 @@
 
 
           showToast(
-            'Impossible d’ouvrir le plein écran dans ce navigateur.'
+            'Impossible d’ouvrir le plein écran.'
           );
 
         }
@@ -3527,8 +4142,12 @@
       'click',
       () => {
 
-        if (joined) {
+        if (
+          joined
+        ) {
+
           return;
+
         }
 
 
@@ -3607,7 +4226,7 @@
         } catch {
 
           showToast(
-            'Copie impossible. Copie l’adresse de la page manuellement.'
+            'Copie impossible.'
           );
 
         }
@@ -3692,9 +4311,11 @@
 
         if (!url) {
 
-          return showToast(
+          showToast(
             'Colle un lien vidéo.'
           );
+
+          return;
 
         }
 
@@ -3705,15 +4326,25 @@
 
         } catch {
 
-          return showToast(
+          showToast(
             'Le lien vidéo n’est pas valide.'
           );
+
+          return;
 
         }
 
 
         const type =
-          detectVideoType(url);
+          detectVideoType(
+            url
+          );
+
+
+        console.log(
+          'Type vidéo détecté:',
+          type
+        );
 
 
         loadSharedVideo(
@@ -3728,15 +4359,20 @@
           'load',
           {
 
-            url,
+            url:
+
+              url,
 
             mediaType:
+
               type,
 
             currentTime:
+
               0,
 
             playing:
+
               false
 
           }
@@ -3744,7 +4380,9 @@
 
 
         showToast(
-          'Vidéo chargée pour vous deux 🎬'
+          type === 'hls'
+            ? 'Flux HLS chargé 🎬'
+            : 'Vidéo chargée pour vous deux 🎬'
         );
 
       }
@@ -3756,11 +4394,14 @@
       () => {
 
         cleanupSharedVideo({
-          resetKey: true
+          resetKey:
+            true
         });
 
 
-        if (joined) {
+        if (
+          joined
+        ) {
 
           socket.emit(
             'clear-shared-video',
@@ -3789,9 +4430,17 @@
           true;
 
 
+        suppressVideoBroadcastUntil =
+          Date.now() + 1200;
+
+
         if (
-          sharedVideoType ===
-            'direct' &&
+          (
+            sharedVideoType ===
+              'direct' ||
+            sharedVideoType ===
+              'hls'
+          ) &&
           sharedVideo
         ) {
 
@@ -3803,15 +4452,20 @@
           } catch (_) {}
 
 
-          if (nextPlaying) {
+          if (
+            nextPlaying
+          ) {
 
             sharedVideo
               .play()
               .catch(
-                () =>
+                () => {
+
                   showToast(
-                    'Impossible de démarrer cette vidéo.'
-                  )
+                    'Impossible de démarrer la vidéo.'
+                  );
+
+                }
               );
 
           } else {
@@ -3834,7 +4488,9 @@
           );
 
 
-          if (nextPlaying) {
+          if (
+            nextPlaying
+          ) {
 
             youtubePlayer.playVideo();
 
@@ -3847,10 +4503,17 @@
         }
 
 
-        applyingRemoteCommand =
-          false;
+        setTimeout(
+          () => {
 
-        updateVideoControls();
+            applyingRemoteCommand =
+              false;
+
+            updateVideoControls();
+
+          },
+          200
+        );
 
 
         sendVideoCommand(
@@ -3887,8 +4550,12 @@
 
 
         if (
-          sharedVideoType ===
-            'direct' &&
+          (
+            sharedVideoType ===
+              'direct' ||
+            sharedVideoType ===
+              'hls'
+          ) &&
           sharedVideo
         ) {
 
@@ -3920,8 +4587,15 @@
           }`;
 
 
-        applyingRemoteCommand =
-          false;
+        setTimeout(
+          () => {
+
+            applyingRemoteCommand =
+              false;
+
+          },
+          100
+        );
 
       }
     );
@@ -3962,13 +4636,13 @@
           );
 
 
-        applyingRemoteCommand =
-          true;
-
-
         if (
-          sharedVideoType ===
-            'direct' &&
+          (
+            sharedVideoType ===
+              'direct' ||
+            sharedVideoType ===
+              'hls'
+          ) &&
           sharedVideo
         ) {
 
@@ -3989,12 +4663,6 @@
           );
 
         }
-
-
-        applyingRemoteCommand =
-          false;
-
-        updateVideoControls();
 
 
         sendVideoCommand(
@@ -4016,8 +4684,12 @@
       () => {
 
         const duration =
-          sharedVideoType ===
-            'direct'
+          (
+            sharedVideoType ===
+              'direct' ||
+            sharedVideoType ===
+              'hls'
+          )
             ? (
                 sharedVideo?.duration ||
                 Infinity
@@ -4036,13 +4708,13 @@
           );
 
 
-        applyingRemoteCommand =
-          true;
-
-
         if (
-          sharedVideoType ===
-            'direct' &&
+          (
+            sharedVideoType ===
+              'direct' ||
+            sharedVideoType ===
+              'hls'
+          ) &&
           sharedVideo
         ) {
 
@@ -4065,12 +4737,6 @@
         }
 
 
-        applyingRemoteCommand =
-          false;
-
-        updateVideoControls();
-
-
         sendVideoCommand(
           'seek',
           {
@@ -4089,7 +4755,9 @@
       'connect',
       () => {
 
-        if (!joined) {
+        if (
+          !joined
+        ) {
 
           setStatus(
             'Prêt à appeler'
@@ -4110,7 +4778,9 @@
         );
 
 
-        if (joined) {
+        if (
+          joined
+        ) {
 
           if (
             count === 2
@@ -4139,10 +4809,16 @@
 
     socket.on(
       'room-ready',
-      async ({ initiator }) => {
+      async ({
+        initiator
+      }) => {
 
-        if (!joined) {
+        if (
+          !joined
+        ) {
+
           return;
+
         }
 
 
@@ -4163,7 +4839,14 @@
         createPeerConnection();
 
 
-        if (isInitiator) {
+        socket.emit(
+          'request-video-state'
+        );
+
+
+        if (
+          isInitiator
+        ) {
 
           await startOffer();
 
@@ -4181,7 +4864,7 @@
 
     socket.on(
       'shared-video-state',
-      (state) => {
+      state => {
 
         if (
           !joined ||
@@ -4208,16 +4891,17 @@
 
     socket.on(
       'video-command',
-      (command) => {
+      command => {
 
-        if (!joined) {
+        if (
+          !joined
+        ) {
+
           return;
+
         }
 
 
-        /*
-         * Chargement d'une nouvelle vidéo.
-         */
         if (
           command.action ===
             'load' &&
@@ -4233,12 +4917,18 @@
             )
           );
 
+
           return;
+
         }
 
 
         applyingRemoteCommand =
           true;
+
+
+        suppressVideoBroadcastUntil =
+          Date.now() + 1500;
 
 
         try {
@@ -4255,8 +4945,12 @@
           ) {
 
             if (
-              sharedVideoType ===
-                'direct' &&
+              (
+                sharedVideoType ===
+                  'direct' ||
+                sharedVideoType ===
+                  'hls'
+              ) &&
               sharedVideo
             ) {
 
@@ -4267,13 +4961,10 @@
               sharedVideo
                 .play()
                 .catch(
-                  () => {
-
+                  () =>
                     showToast(
-                      'Clique sur ▶ Lecture pour autoriser la lecture de la vidéo.'
-                    );
-
-                  }
+                      'Appuie sur ▶ Lecture pour autoriser la lecture.'
+                    )
                 );
 
 
@@ -4301,8 +4992,12 @@
           ) {
 
             if (
-              sharedVideoType ===
-                'direct' &&
+              (
+                sharedVideoType ===
+                  'direct' ||
+                sharedVideoType ===
+                  'hls'
+              ) &&
               sharedVideo
             ) {
 
@@ -4324,6 +5019,7 @@
                 true
               );
 
+
               youtubePlayer.pauseVideo();
 
             }
@@ -4335,8 +5031,12 @@
           ) {
 
             if (
-              sharedVideoType ===
-                'direct' &&
+              (
+                sharedVideoType ===
+                  'direct' ||
+                sharedVideoType ===
+                  'hls'
+              ) &&
               sharedVideo
             ) {
 
@@ -4362,10 +5062,17 @@
 
         } finally {
 
-          applyingRemoteCommand =
-            false;
+          setTimeout(
+            () => {
 
-          updateVideoControls();
+              applyingRemoteCommand =
+                false;
+
+              updateVideoControls();
+
+            },
+            100
+          );
 
         }
 
@@ -4393,6 +5100,7 @@
 
         resetPeer();
 
+
         setStatus(
           'Ta copine a quitté le salon'
         );
@@ -4410,7 +5118,9 @@
       'beforeunload',
       () => {
 
-        if (joined) {
+        if (
+          joined
+        ) {
 
           socket.emit(
             'leave-room'
@@ -4425,16 +5135,22 @@
     const initialRoom =
       new URLSearchParams(
         window.location.search
-      ).get('room');
+      ).get(
+        'room'
+      );
 
 
-    if (initialRoom) {
+    if (
+      initialRoom
+    ) {
 
       roomInput.value =
         initialRoom.toUpperCase();
 
+
       copyBtn.disabled =
         false;
+
 
     } else {
 
@@ -4449,6 +5165,11 @@
     );
 
 
+    setStatus(
+      'Prêt à appeler'
+    );
+
+
     /*
      * API YouTube
      */
@@ -4457,16 +5178,16 @@
         'script'
       );
 
+
     youtubeApi.src =
       'https://www.youtube.com/iframe_api';
+
 
     document.head.appendChild(
       youtubeApi
     );
 
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 </body>
 </html>
